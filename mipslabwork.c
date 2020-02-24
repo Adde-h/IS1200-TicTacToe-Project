@@ -19,6 +19,15 @@ char textstring[] = "text, more text, and even more text!";
 int timeoutcount = 0;
 int mytime = 0x0000;
 
+//Project variables
+int screen = 0;
+int Xturn = 0;
+int Oturn = 0;
+int win = 0;
+char boardArr[9] = {&nbsp;}
+
+char marker = 0x178;
+
 // defining the int pointer, trise, volatile because you 
 //don't want the c compiler to optimise
 volatile int * portE = (volatile int *) 0xbf886110;
@@ -30,7 +39,9 @@ volatile int *E = (volatile int *) 0xbf886100;
 
 int menu(void)
 {
-	display_string(0, "   Tic-Tac-Toe   ");
+	//display_string(0, "   Tic-Tac-Toe   ");
+	display_string(0, marker);
+	
 	display_string(1, "BTN 4: HowToPlay");
 	display_string(2, "BTN 3: Hi-Score");
 	display_string(3, "BTN 2: Start!");
