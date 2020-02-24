@@ -68,7 +68,7 @@ void user_isr( void ) {
 
     if (timeoutcount == 10){
      time2string( textstring, mytime );
- 	 display_string( 0, textstring );
+ 	// display_string( 0, textstring );
      display_update();
       tick( &mytime );
       timeoutcount = 0;
