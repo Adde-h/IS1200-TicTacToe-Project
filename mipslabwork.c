@@ -10,9 +10,12 @@
 
    For copyright and licensing, see file COPYING */
 
+#include <stdio.h>
 #include <stdint.h>   /* Declarations of uint_32 and the like */
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "mipslab.h"  /* Declatations for these labs */
+#include <string.h> 
+
 #define TMR2PERIOD ((80000000 / 256) / 10)
 
 char textstring[] = "text, more text, and even more text!";
@@ -25,7 +28,6 @@ int Xturn = 0;
 int Oturn = 0;
 int win = 0;
 char boardArr[9];
-char marker = 0x178;
 
 // defining the int pointer, trise, volatile because you 
 //don't want the c compiler to optimise
@@ -50,17 +52,30 @@ int menu(void)
 
 int instr(void)
 {
-	display_string(0, "Instr" + " test");
+	display_string(0, "Instruction");
 	display_string(1, "BTN 4: Left");
 	display_string(2, "BTN 3: Confirm");
 	display_string(3, "BTN 2: Right");
 	display_update();
 }
 
+int HiScore(void)
+{
+	display_string(0, "High Score");
+	display_string(1, "1. A.Hajo ");
+	display_string(2, "2. A.Hussain");
+	display_string(3, "");
+	display_update();
+}
+
 int board(void)
 {
+	char b[] = "we";
+	char a[20] = " will rock";
 
-	display_string(0, "Begin!" );
+	//strcat(a, b);
+
+	display_string(0, a);
     display_string(1, "|O|X|X|  |X Turn|");
     display_string(2, "|O|X|O|  X: 2p");
     display_string(3, "|X|O|X|  O: 1p");
@@ -131,20 +146,22 @@ void labwork( void )
 	int sw = getsw();
 	int btn = getbtns();
 
-	if (btn & 1) //BTN 2
+	if (btn & 1 && screen == 0) //BTN 2
 	{
 		board();
-		mytime = 0x0000;
+		screen = 3;
 	}
 
-	if (btn & 2) //BTN 3
+	if (btn & 2 && screen == 0) //BTN 3
 	{
-
+		HiScore();
+		screen = 2;
 	}
 
-	if (btn & 4) //BTN 4
+	if (btn & 4 && screen == 0) //BTN 4
 	{
 		instr();
+		screen = 1;
 	}
 
 
