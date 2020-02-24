@@ -25,7 +25,6 @@ int Xturn = 0;
 int Oturn = 0;
 int win = 0;
 char boardArr[9];
-
 char marker = 0x178;
 
 // defining the int pointer, trise, volatile because you 
@@ -39,8 +38,8 @@ volatile int *E = (volatile int *) 0xbf886100;
 
 int menu(void)
 {
-	//display_string(0, "   Tic-Tac-Toe   ");
-	display_string(0, "" + marker);
+	display_string(0, "   Tic-Tac-Toe   ");
+	//display_string(0, "" + marker);
 	
 	display_string(1, "BTN 4: HowToPlay");
 	display_string(2, "BTN 3: Hi-Score");
@@ -51,7 +50,7 @@ int menu(void)
 
 int instr(void)
 {
-	display_string(0, "Instructions");
+	display_string(0, "Instr" + " test");
 	display_string(1, "BTN 4: Left");
 	display_string(2, "BTN 3: Confirm");
 	display_string(3, "BTN 2: Right");
