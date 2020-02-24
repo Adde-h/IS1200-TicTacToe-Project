@@ -50,7 +50,7 @@ int instr(void)
 	display_string(0, "BTN 4: Left");
 	display_string(1, "BTN 3: Confirm");
 	display_string(2, "BTN 2: Right");
-	display_string(3, "Back, press BTN 1");
+	display_string(3, "Back press BTN 1");
 
 	display_update();
 	screen = 1;
@@ -58,17 +58,17 @@ int instr(void)
 
 int hiScore(void)
 {
-	display_string(0, "High Score");
+	display_string(0, "  High Score  ");
 	display_string(1, "1. AHJ ");
 	display_string(2, "2. AHN ");
-	display_string(3, "Back, press BTN 1");
+	display_string(3, "Back press BTN 1");
 	display_update();
 	screen = 2;
 }
 
 int board(void)
 {
-	display_string(0, "TicTacToe");
+	display_string(0, "  TicTacToe  ");
 	display_string(1, "|-|-|-|");
     display_string(2, "|-|-|-|");
     display_string(3, "|-|-|-|");

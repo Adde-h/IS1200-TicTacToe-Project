@@ -232,6 +232,7 @@ void moveCursor(int direction){
     currX+=2;
   }
   textbuffer[currY][currX] = 43;
+  display_update();
 }
 
 /*
