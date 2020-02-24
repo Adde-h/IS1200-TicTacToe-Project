@@ -27,7 +27,11 @@ int screen = 0; // Menu = 0, Instr = 1, Hi-Score = 2, Game = 3;
 int Xturn = 0;
 int Oturn = 0;
 int win = 0;
-char boardArr[9];
+char boardArr[3][5] = {
+	{124, 32, 124, 32, 124},
+	{124, 32, 124, 32, 124},
+	{124, 32, 124, 32, 124},
+};
 
 // defining the int pointer, trise, volatile because you 
 //don't want the c compiler to optimise
@@ -40,12 +44,17 @@ volatile int *E = (volatile int *) 0xbf886100;
 
 int menu(void)
 {
-	display_string(0, "   Tic-Tac-Toe   ");
+//	display_string(0, "   Tic-Tac-Toe   ");
 	//display_string(0, "" + marker);
-	
-	display_string(1, "BTN 4: HowToPlay");
+	textbuffer[0][15] = 72;
+	textbuffer[0][8] = 55;
+	textbuffer[1][0] = 87;
+	textbuffer[3][14] = 82;
+
+	 
+	/*display_string(1, "BTN 4: HowToPlay");
 	display_string(2, "BTN 3: Hi-Score");
-	display_string(3, "BTN 2: Start!");
+	display_string(3, "BTN 2: Start!");*/
 	display_update();
 	screen = 0;
 }
@@ -70,16 +79,24 @@ int HiScore(void)
 
 int board(void)
 {
-	char b[] = "we";
-	char a[20] = " will rock";
+	//display_string(0, a);
+	//textbuffer[1][0] = boardArr[1][0];
 
-	//strcat(a, b);
 
-	display_string(0, a);
-    display_string(1, "|O|X|X|  |X Turn|");
-    display_string(2, "|O|X|O|  X: 2p");
-    display_string(3, "|X|O|X|  O: 1p");
+
+
+	/*textbuffer[1][15] = 72;
+	textbuffer[0][8] = 55;
+	textbuffer[1][0] = 87;
+	textbuffer[3][14] = 82;
+    */
+	
+	display_string(0, "TicTacToe");
+	display_string(1, "|-|-|-|");
+    display_string(2, "|-|-|-|");
+    display_string(3, "|-|-|-|");
 	display_update();
+	screen=3;
 
 }
 /* Interrupt Service Routine */
@@ -149,19 +166,19 @@ void labwork( void )
 	if (btn & 1 && screen == 0) //BTN 2
 	{
 		board();
-		screen = 3;
+	}
+	else if (btn & 1 && screen == 3){
+		textbuffer[1][1] = 88;
 	}
 
 	if (btn & 2 && screen == 0) //BTN 3
 	{
 		HiScore();
-		screen = 2;
 	}
 
 	if (btn & 4 && screen == 0) //BTN 4
 	{
 		instr();
-		screen = 1;
 	}
 
 
