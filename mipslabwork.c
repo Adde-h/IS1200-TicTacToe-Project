@@ -22,6 +22,8 @@ char textstring[] = "text, more text, and even more text!";
 int timeoutcount = 0;
 int mytime = 0x0000;
 
+
+
 //Project variables
 int screen = 0; // Menu = 0, Instr = 1, Hi-Score = 2, Game = 3;
 int Xturn = 0;
@@ -32,48 +34,36 @@ char boardArr[3][7] = {
 	{124, 43, 124, 43, 124, 43, 124},
 	{124, 43, 124, 43, 124, 43, 124},
 };
-// defining the int pointer, trise, volatile because you 
-//don't want the c compiler to optimise
-volatile int * portE = (volatile int *) 0xbf886110;
-
   
-// Set *E to address of TRISE.
-volatile int *E = (volatile int *) 0xbf886100;
-
-
 int menu(void)
 {
-//	display_string(0, "   Tic-Tac-Toe   ");
-	//display_string(0, "" + marker);
-	textbuffer[0][14] = 43;
-	textbuffer[0][8] = 55;
-	textbuffer[1][0] = 87;
-	textbuffer[3][14] = 82;
-
-	 
-	/*display_string(1, "BTN 4: HowToPlay");
+	display_string(0, "   Tic-Tac-Toe   ");
+	display_string(1, "BTN 4: HowToPlay");
 	display_string(2, "BTN 3: Hi-Score");
-	display_string(3, "BTN 2: Start!");*/
+	display_string(3, "BTN 2: Start!");
 	display_update();
 	screen = 0;
 }
 
 int instr(void)
 {
-	display_string(0, "Instruction");
-	display_string(1, "BTN 4: Left");
-	display_string(2, "BTN 3: Confirm");
-	display_string(3, "BTN 2: Right");
+	display_string(0, "BTN 4: Left");
+	display_string(1, "BTN 3: Confirm");
+	display_string(2, "BTN 2: Right");
+	display_string(3, "Back, press BTN 1");
+
 	display_update();
+	screen = 1;
 }
 
-int HiScore(void)
+int hiScore(void)
 {
 	display_string(0, "High Score");
 	display_string(1, "1. AHJ ");
 	display_string(2, "2. AHN ");
-	display_string(3, "");
+	display_string(3, "Back, press BTN 1");
 	display_update();
+	screen = 2;
 }
 
 int board(void)
@@ -93,27 +83,28 @@ void user_isr( void ) {
 
   // check flag
   if(IFS(0) & 0x100){
-    // clearing flag
-    IFS(0) = 0;
-    timeoutcount++;
+	// clearing flag
+	IFS(0) = 0;
+	timeoutcount++;
 
-    if (timeoutcount == 10){
-     time2string( textstring, mytime );
- 	// display_string( 0, textstring );
-     display_update();
-      tick( &mytime );
-      timeoutcount = 0;
+	if (timeoutcount == 10){
+	/*    time2string( textstring, mytime );
+	// display_string( 0, textstring );
+		display_update();
+		tick( &mytime ); */
+		timeoutcount = 0;
+		PORTE =  PORTE + 0x1; //Incrementing leds by 1 every second
     }
   }
     
-  // code for counting LED
+  // code for counting LED & Reseting when full
   if(IFS(0) & 0x80){
     // clearing flag
     IFS(0) = 0;
     // for LEDs ticking
-    * portE =  * portE + 0x1;
+    PORTE =  PORTE + 0x1;
     // only for the last 8 bits
-    * E = * E & 0xFF00;
+	TRISECLR = 0xFF;
   }
 
   return;
@@ -123,10 +114,10 @@ void user_isr( void ) {
 void labinit( void )
 {
 
-	// Set first 8 bits to zero, i.e. sets them as output pins. LEDS
-	*E = *E & 0xff00;
+	TRISECLR = 0xFF; // Set first 8 bits to zero (sets them as output pins for LED)
 
-	// Initialize port D, set bits 11-5 as inputs. SW1-4 & BTN1-4
+	TRISFCLR = 0x1;	//Initialize BTN 1
+	// Initialize port D, set bits 11-5 as inputs. SW1-4 & BTN2-4
 	TRISD = TRISD & 0x0fe0;
 
 	PR2 = TMR2PERIOD;
@@ -138,7 +129,7 @@ void labinit( void )
 	// configuring the priority level
 	IPC(2) = 7;
 	// enabling bit 8 for the interupt
-	IEC(0) = 0x100;
+	IEC(0) = (1<<8);
 
   // calling interupt from labwork.S
 	enable_interrupt();
@@ -151,6 +142,7 @@ void labwork( void )
 {
 	int sw = getsw();
 	int btn = getbtns();
+	int btn1 = getbtn1();
 
 
 /*
@@ -159,29 +151,43 @@ BTN 3: Confirm
 BTN 2: Right
 */
 
+/*			Menu Buttons 		*/
 	if ((btn & 1) && screen == 0) //BTN 2
 	{
-		board();
-	}
-	else if ((btn & 1) && screen == 3)
-	{
-		moveCursor(2);
+		board();	//Start Game
 	}
 
 	if ((btn & 2) && screen == 0) //BTN 3
 	{
-		HiScore();
+		hiScore();
 	}
 
 	if ((btn & 4) && screen == 0) //BTN 4
 	{
 		instr();
 	}
-	else if ((btn & 4) && screen == 3) //BTN 4
+
+/*			Instruction Buttons 		*/
+	if ((btn1 & 1) && screen == 1) //BTN 1
+	{
+		menu();		//Back to menu
+	}
+
+/*			HiScore Buttons 		*/
+	if ((btn1 & 1) && screen == 2) //BTN 1
+	{
+		menu();		//Back to menu
+	}
+
+/*			Game Buttons			*/
+if ((btn & 1) && screen == 3)
+	{
+		moveCursor(2);
+	}
+if ((btn & 4) && screen == 3) //BTN 4
 	{
 		moveCursor(1);
 	}
-
 
 //  delay( 1000 );
 // time2string( textstring, mytime );
