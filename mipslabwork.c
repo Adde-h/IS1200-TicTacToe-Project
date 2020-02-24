@@ -159,24 +159,25 @@ BTN 3: Confirm
 BTN 2: Right
 */
 
-	if (btn & 1 && screen == 0) //BTN 2
+	if ((btn & 1) && screen == 0) //BTN 2
 	{
 		board();
 	}
-	else if (btn & 1 && screen == 3){
+	else if ((btn & 1) && screen == 3)
+	{
 		moveCursor(2);
 	}
 
-	if (btn & 2 && screen == 0) //BTN 3
+	if ((btn & 2) && screen == 0) //BTN 3
 	{
 		HiScore();
 	}
 
-	if (btn & 4 && screen == 0) //BTN 4
+	if ((btn & 4) && screen == 0) //BTN 4
 	{
 		instr();
 	}
-	else if (btn & 4 && screen == 3) //BTN 4
+	else if ((btn & 4) && screen == 3) //BTN 4
 	{
 		moveCursor(1);
 	}
