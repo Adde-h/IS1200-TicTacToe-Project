@@ -20,11 +20,11 @@ int timeoutcount = 0;
 int mytime = 0x0000;
 
 //Project variables
-int screen = 0;
+int screen = 0; // Menu = 0, Instr = 1, Hi-Score = 2, Game = 3;
 int Xturn = 0;
 int Oturn = 0;
 int win = 0;
-char boardArr[9] = {&nbsp;}
+char boardArr[9];
 
 char marker = 0x178;
 
@@ -40,18 +40,18 @@ volatile int *E = (volatile int *) 0xbf886100;
 int menu(void)
 {
 	//display_string(0, "   Tic-Tac-Toe   ");
-	display_string(0, marker);
+	display_string(0, "" + marker);
 	
 	display_string(1, "BTN 4: HowToPlay");
 	display_string(2, "BTN 3: Hi-Score");
 	display_string(3, "BTN 2: Start!");
 	display_update();
-	menu = 1;
+	screen = 0;
 }
 
 int instr(void)
 {
-	display_string(0, "  Instructions   ");
+	display_string(0, "Instructions");
 	display_string(1, "BTN 4: Left");
 	display_string(2, "BTN 3: Confirm");
 	display_string(3, "BTN 2: Right");
