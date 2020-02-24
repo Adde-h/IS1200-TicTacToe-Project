@@ -27,12 +27,11 @@ int screen = 0; // Menu = 0, Instr = 1, Hi-Score = 2, Game = 3;
 int Xturn = 0;
 int Oturn = 0;
 int win = 0;
-char boardArr[3][5] = {
-	{124, 32, 124, 32, 124},
-	{124, 32, 124, 32, 124},
-	{124, 32, 124, 32, 124},
+char boardArr[3][7] = {
+	{124, 43, 124, 43, 124, 43, 124},
+	{124, 43, 124, 43, 124, 43, 124},
+	{124, 43, 124, 43, 124, 43, 124},
 };
-
 // defining the int pointer, trise, volatile because you 
 //don't want the c compiler to optimise
 volatile int * portE = (volatile int *) 0xbf886110;
@@ -46,7 +45,7 @@ int menu(void)
 {
 //	display_string(0, "   Tic-Tac-Toe   ");
 	//display_string(0, "" + marker);
-	textbuffer[0][15] = 72;
+	textbuffer[0][14] = 43;
 	textbuffer[0][8] = 55;
 	textbuffer[1][0] = 87;
 	textbuffer[3][14] = 82;
@@ -71,34 +70,24 @@ int instr(void)
 int HiScore(void)
 {
 	display_string(0, "High Score");
-	display_string(1, "1. A.Hajo ");
-	display_string(2, "2. A.Hussain");
+	display_string(1, "1. AHJ ");
+	display_string(2, "2. AHN ");
 	display_string(3, "");
 	display_update();
 }
 
 int board(void)
 {
-	//display_string(0, a);
-	//textbuffer[1][0] = boardArr[1][0];
-
-
-
-
-	/*textbuffer[1][15] = 72;
-	textbuffer[0][8] = 55;
-	textbuffer[1][0] = 87;
-	textbuffer[3][14] = 82;
-    */
-	
 	display_string(0, "TicTacToe");
 	display_string(1, "|-|-|-|");
     display_string(2, "|-|-|-|");
     display_string(3, "|-|-|-|");
 	display_update();
-	screen=3;
+	screen = 3;
 
+	createCursor();
 }
+
 /* Interrupt Service Routine */
 void user_isr( void ) {
 
@@ -163,12 +152,19 @@ void labwork( void )
 	int sw = getsw();
 	int btn = getbtns();
 
+
+/*
+BTN 4: Left
+BTN 3: Confirm
+BTN 2: Right
+*/
+
 	if (btn & 1 && screen == 0) //BTN 2
 	{
 		board();
 	}
 	else if (btn & 1 && screen == 3){
-		textbuffer[1][1] = 88;
+		moveCursor(2);
 	}
 
 	if (btn & 2 && screen == 0) //BTN 3
@@ -179,6 +175,10 @@ void labwork( void )
 	if (btn & 4 && screen == 0) //BTN 4
 	{
 		instr();
+	}
+	else if (btn & 4 && screen == 3) //BTN 4
+	{
+		moveCursor(1);
 	}
 
 

@@ -196,6 +196,43 @@ static void num32asc( char * s, int n )
     *s++ = "0123456789ABCDEF"[ (n >> i) & 15 ];
 }
 
+
+/*
+#############################
+PROJECT FUNCTIONS
+############################
+*/
+
+void createCursor(void) {
+  textbuffer[1][1] = 43;
+}
+
+void moveCursor(int direction){
+  //1 - left
+  //2 - right
+  currX = 1;
+  currY = 1;
+  
+  if(direction == 1){
+    if(currX != 1 && currY != 1){
+      if(currX == 1 && (currY == 2 || currY == 3)){
+        currY--;
+        currX = 5;
+      }
+      currX=-2;
+    }
+  }
+  else if(direction == 2){
+    if(currX != 5 && currY != 3){
+      if(currX == 5 && (currY == 1 || currY == 2)){
+        currY++;
+        currX = 1;
+      }
+    }
+    currX+=2;
+  }
+}
+
 /*
  * nextprime
  * 
