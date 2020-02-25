@@ -57,11 +57,9 @@ int main(void) {
 	SPI2CONSET = 0x8000;
 	
 	display_init();
-	menu();		//Menu from mipslabwork.c
+	menu();			//Menu from mipslabwork.c
 	display_update();
-	
-//	display_image(96, icon); KTH-Doge
-	
+		
 	labinit(); /* Do any lab-specific initialization */
 
 	while( 1 )

@@ -25,6 +25,23 @@ static void num32asc( char * s, int );
 #define DISPLAY_TURN_OFF_VDD (PORTFSET = 0x40)
 #define DISPLAY_TURN_OFF_VBAT (PORTFSET = 0x20)
 
+int getsw( void )
+{
+
+    return (PORTD >> 8) & 0x000F; //Shiftar 8 bitar till höger och maskerar resten
+
+}
+
+int getbtns(void) {
+
+	return (PORTD >> 5) & 0x0007; //Shiftar bitarna 5 steg till höger och maskerar resten
+}
+
+int getbtn1(void)
+{
+    return (PORTF >> 1) & 0x01;   //Masks all bits except bit 1
+}
+
 /* quicksleep:
    A simple function to create a small delay.
    Very inefficient use of computing resources,
