@@ -25,6 +25,9 @@ static void num32asc( char * s, int );
 #define DISPLAY_TURN_OFF_VDD (PORTFSET = 0x40)
 #define DISPLAY_TURN_OFF_VBAT (PORTFSET = 0x20)
 
+int currY;
+int currX;
+
 int getsw( void )
 {
 
@@ -221,15 +224,17 @@ PROJECT FUNCTIONS
 */
 
 void createCursor(void) {
+  //1 - left
+  //2 - right
+  currX = 1;
+  currY = 1;
   textbuffer[1][1] = 43;
 }
 
+
+
 void moveCursor(int direction){
-  //1 - left
-  //2 - right
-  int currX = 1;
-  int currY = 1;
-  
+
   if(direction == 1){
     if(currX != 1 && currY != 1){
       if(currX == 1 && (currY == 2 || currY == 3)){
@@ -249,7 +254,6 @@ void moveCursor(int direction){
     currX+=2;
   }
   textbuffer[currY][currX] = 43;
-  display_update();
 }
 
 /*
