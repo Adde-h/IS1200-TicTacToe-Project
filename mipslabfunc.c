@@ -233,15 +233,19 @@ void createCursor(void) {
 
 
 
-void moveCursor(int direction){
+int moveCursor(int direction){
 
   if(direction == 1){
     if(currX != 1 && currY != 1){
       if(currX == 1 && (currY == 2 || currY == 3)){
         currY--;
         currX = 5;
+        textbuffer[currY][currX] = 43;
+        return 1;
       }
       currX=-2;
+      textbuffer[currY][currX] = 43;
+      return 1;
     }
   }
   else if(direction == 2){
@@ -249,11 +253,14 @@ void moveCursor(int direction){
       if(currX == 5 && (currY == 1 || currY == 2)){
         currY++;
         currX = 1;
+        textbuffer[currY][currX] = 43;
+        return 1;
       }
     }
     currX+=2;
+    textbuffer[currY][currX] = 43;
+    return 1;
   }
-  textbuffer[currY][currX] = 43;
 }
 
 /*
