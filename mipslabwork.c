@@ -26,14 +26,9 @@ int mytime = 0x0000;
 
 //Project variables
 int screen = 0; // Menu = 0, Instr = 1, Hi-Score = 2, Game = 3;
-int Xturn = 0;
-int Oturn = 0;
+int turn = 1; // Xturn = 1, OTurn = 2;
 int win = 0;
-char boardArr[3][7] = {
-	{124, 43, 124, 43, 124, 43, 124},
-	{124, 43, 124, 43, 124, 43, 124},
-	{124, 43, 124, 43, 124, 43, 124},
-};
+
   
 int menu(void)
 {
@@ -72,10 +67,8 @@ int board(void)
 	display_string(1, "|-|-|-|");
     display_string(2, "|-|-|-|");
     display_string(3, "|-|-|-|");
-	display_update();
-	screen = 3;
-
 	createCursor();
+	display_update();
 }
 
 /* Interrupt Service Routine */
@@ -154,39 +147,58 @@ BTN 2: Right
 /*			Menu Buttons 		*/
 	if ((btn & 1) && screen == 0) //BTN 2
 	{
+		
 		board();	//Start Game
+		delay(1000);
+		screen = 3;
+		
 	}
 
-	if ((btn & 2) && screen == 0) //BTN 3
+	else if ((btn & 2) && screen == 0) //BTN 3
 	{
 		hiScore();
 	}
 
-	if ((btn & 4) && screen == 0) //BTN 4
+	else if ((btn & 4) && screen == 0) //BTN 4
 	{
 		instr();
 	}
 
 /*			Instruction Buttons 		*/
-	if ((btn1 & 1) && screen == 1) //BTN 1
+	else if ((btn1 & 1) && screen == 1) //BTN 1
 	{
 		menu();		//Back to menu
 	}
 
 /*			HiScore Buttons 		*/
-	if ((btn1 & 1) && screen == 2) //BTN 1
+	else if ((btn1 & 1) && screen == 2) //BTN 1
 	{
 		menu();		//Back to menu
 	}
 
 /*			Game Buttons			*/
-if ((btn & 1) && screen == 3)
+else if ((btn & 1) && screen == 3) //BTN 3
 	{
 		moveCursor(2);
+		/*int i, j;
+		for (i = 1; i <= 3; i++)
+		{
+			for (j = 0; j <= 6; j++)
+			{
+				textbuffer[i][j] = boardArr[i-1][j];
+			}
+			
+		}*/
+		
 	}
-if ((btn & 4) && screen == 3) //BTN 4
+else if ((btn & 4) && screen == 3) //BTN 4
 	{
 		moveCursor(1);
+	}
+
+else if ((btn & 4) && screen == 3) //BTN 2
+	{
+		place(turn);
 	}
 
 //  delay( 1000 );

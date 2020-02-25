@@ -27,6 +27,8 @@ static void num32asc( char * s, int );
 
 int currY;
 int currX;
+char temp;
+
 
 int getsw( void )
 {
@@ -223,45 +225,98 @@ PROJECT FUNCTIONS
 ############################
 */
 
+void saveTemp(int currY, int currX)
+{
+  textbuffer[currY][currX] = temp;
+}
+
 void createCursor(void) {
-  //1 - left
-  //2 - right
+  temp = textbuffer[1][1];
+  textbuffer[1][1] = 43; //row 0 textbuffer unused
+  //boardArr[0][1] = 43; //y-1
   currX = 1;
   currY = 1;
-  textbuffer[1][1] = 43;
 }
 
 
-
-int moveCursor(int direction){
-
+ //1 - left
+ //2 - right
+void moveCursor(int direction){
   if(direction == 1){
-    if(currX != 1 && currY != 1){
-      if(currX == 1 && (currY == 2 || currY == 3)){
+    if(currY != 1){
+      if(currX == 1){
+        if (currY == 2 || currY == 3){
+        saveTemp(currY,currX);
         currY--;
         currX = 5;
-        textbuffer[currY][currX] = 43;
-        return 1;
+        delay(250);
+        }
       }
-      currX=-2;
-      textbuffer[currY][currX] = 43;
-      return 1;
+      else{
+        saveTemp(currY,currX);
+        currX-=2;
+        delay(250);
+      }
+    }else{
+      if(currX != 1){
+        saveTemp(currY,currX);
+        currX-=2;
+        delay(250);
+      }
+      else{
+        return;
+      }
     }
   }
   else if(direction == 2){
-    if(currX != 5 && currY != 3){
-      if(currX == 5 && (currY == 1 || currY == 2)){
+    if(currY != 3){
+      if(currX == 5){
+        if (currY == 1 || currY == 2){
+        saveTemp(currY,currX);
         currY++;
         currX = 1;
-        textbuffer[currY][currX] = 43;
-        return 1;
+        delay(250);
+        }
+      }
+      else{
+        saveTemp(currY,currX);
+        currX+=2;
+        delay(250);
+      }
+    }else{
+      saveTemp(currY,currX);
+      if(currX != 5){
+        currX+=2;
+        delay(250);
+      }
+      else{
+        return;
       }
     }
-    currX+=2;
-    textbuffer[currY][currX] = 43;
-    return 1;
   }
+  //boardArr[currY-1][currX] = 43;
+  textbuffer[currY][currX] = 43;
+  display_update();
+  PORTE = 0x15;
+  return;
 }
+
+void place(int turn) {
+  if (turn == 1)
+  {
+    saveTemp(currY,currX);
+    textbuffer[currY][currX] = 88;
+    turn = 2;
+  }
+  else if (turn == 2)
+  {
+    saveTemp(currY,currX);
+    textbuffer[currY][currX] = 79;
+    turn = 1;
+  }
+
+}
+
 
 /*
  * nextprime
@@ -392,3 +447,26 @@ char * itoaconv( int num )
    * we must add 1 in order to return a pointer to the first occupied position. */
   return( &itoa_buffer[ i + 1 ] );
 }
+
+
+
+
+
+/*
+  if(direction == 1){
+    if(currX != 1 && currY != 1){
+      if(currX == 1 && (currY == 2 || currY == 3)){
+        currY--;
+        currX = 5;
+        
+        boardArr[currY-1][currX] = 43;
+    display_update();
+    return;
+      }
+      currX=-2;
+
+      boardArr[currY-1][currX] = 43;
+    display_update();
+    return;
+    }
+  }*/
