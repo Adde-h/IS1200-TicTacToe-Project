@@ -250,22 +250,26 @@ void moveCursor(int direction){
     if(currY != 1){
       if(currX == 1){
         if (currY == 2 || currY == 3){
-        writeTemp(currY,currX);
+          //Goes to prev line
+        saveTemp(currY,currX);
         currY--;
         currX = 5;
         delay(250);
+        writeTemp(currY+1,1);
         }
       }
       else{
-        writeTemp(currY,currX);
+        saveTemp(currY,currX);
         currX-=2;
         delay(250);
+        writeTemp(currY, currX-2);
       }
     }else{
       if(currX != 1){
-        writeTemp(currY,currX);
+        saveTemp(currY,currX);
         currX-=2;
         delay(250);
+        writeTemp(currY, currX-2);
       }
       else{
         return;
@@ -276,22 +280,25 @@ void moveCursor(int direction){
     if(currY != 3){
       if(currX == 5){
         if (currY == 1 || currY == 2){
-        writeTemp(currY,currX);
+        saveTemp(currY,currX);
         currY++;
         currX = 1;
         delay(250);
+        writeTemp(currY-1, 5);
         }
       }
       else{
-        writeTemp(currY,currX);
+        saveTemp(currY,currX);
         currX+=2;
         delay(250);
+        writeTemp(currY, currX-2);
       }
     }else{
-      writeTemp(currY,currX);
+      saveTemp(currY,currX);
       if(currX != 5){
         currX+=2;
         delay(250);
+        writeTemp(currY, currX-2);
       }
       else{
         return;
