@@ -230,6 +230,10 @@ void saveTemp(int Y, int X)
   temp = textbuffer[Y][X];
 }
 
+void writeTemp(int Y, int X){
+  textbuffer[Y][X] = temp;
+}
+
 void createCursor(void) {
   saveTemp(1,1);
   textbuffer[1][1] = 43; //row 0 textbuffer unused
@@ -246,20 +250,20 @@ void moveCursor(int direction){
     if(currY != 1){
       if(currX == 1){
         if (currY == 2 || currY == 3){
-        saveTemp(currY,currX);
+        writeTemp(currY,currX);
         currY--;
         currX = 5;
         delay(250);
         }
       }
       else{
-        saveTemp(currY,currX);
+        writeTemp(currY,currX);
         currX-=2;
         delay(250);
       }
     }else{
       if(currX != 1){
-        saveTemp(currY,currX);
+        writeTemp(currY,currX);
         currX-=2;
         delay(250);
       }
@@ -272,19 +276,19 @@ void moveCursor(int direction){
     if(currY != 3){
       if(currX == 5){
         if (currY == 1 || currY == 2){
-        saveTemp(currY,currX);
+        writeTemp(currY,currX);
         currY++;
         currX = 1;
         delay(250);
         }
       }
       else{
-        saveTemp(currY,currX);
+        writeTemp(currY,currX);
         currX+=2;
         delay(250);
       }
     }else{
-      saveTemp(currY,currX);
+      writeTemp(currY,currX);
       if(currX != 5){
         currX+=2;
         delay(250);
@@ -304,13 +308,13 @@ void moveCursor(int direction){
 void place(int turn) {
   if (turn == 1)
   {
-    saveTemp(currY,currX);
+    writeTemp(currY,currX);
     textbuffer[currY][currX] = 88;
     turn = 2;
   }
   else if (turn == 2)
   {
-    saveTemp(currY,currX);
+    writeTemp(currY,currX);
     textbuffer[currY][currX] = 79;
     turn = 1;
   }
