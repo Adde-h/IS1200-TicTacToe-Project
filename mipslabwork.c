@@ -26,7 +26,6 @@ int mytime = 0x0000;
 
 //Project variables
 int screen = 0; // Menu = 0, Instr = 1, Hi-Score = 2, Game = 3;
-int turn = 1; // Xturn = 1, OTurn = 2;
 int win = 0;
 
   
@@ -177,18 +176,9 @@ BTN 2: Right
 	}
 
 /*			Game Buttons			*/
-else if ((btn & 1) && screen == 3) //BTN 3
+else if ((btn & 1) && screen == 3) //BTN 2
 	{
 		moveCursor(2);
-		/*int i, j;
-		for (i = 1; i <= 3; i++)
-		{
-			for (j = 0; j <= 6; j++)
-			{
-				textbuffer[i][j] = boardArr[i-1][j];
-			}
-			
-		}*/
 		
 	}
 else if ((btn & 4) && screen == 3) //BTN 4
@@ -196,15 +186,13 @@ else if ((btn & 4) && screen == 3) //BTN 4
 		moveCursor(1);
 	}
 
-else if ((btn & 4) && screen == 3) //BTN 2
+else if ((btn & 2) && screen == 3) //BTN 3
 	{
-		place(turn);
+		place();
 	}
 
-//  delay( 1000 );
 // time2string( textstring, mytime );
  // display_string( 3, textstring );
  // display_update();
  // tick( &mytime );
- // display_image(96, icon);
 }

@@ -28,6 +28,8 @@ static void num32asc( char * s, int );
 int currY;
 int currX;
 char temp;
+int turn = 1; // Xturn = 1, OTurn = 2;
+
 
 
 int getsw( void )
@@ -228,18 +230,22 @@ PROJECT FUNCTIONS
 void saveTemp(int Y, int X)
 {
   temp = textbuffer[Y][X];
+  display_update();
 }
 
 void writeTemp(int Y, int X){
   textbuffer[Y][X] = temp;
+  display_update();
 }
 
 void createCursor(void) {
-  saveTemp(1,1);
+  temp = textbuffer[1][1];
+  delay(250);
   textbuffer[1][1] = 43; //row 0 textbuffer unused
   //boardArr[0][1] = 43; //y-1
   currX = 1;
   currY = 1;
+  display_update();
 }
 
 
@@ -250,26 +256,27 @@ void moveCursor(int direction){
     if(currY != 1){
       if(currX == 1){
         if (currY == 2 || currY == 3){
-          //Goes to prev line
-        saveTemp(currY,currX);
+        //Goes to prev line
+        delay(250);
+        writeTemp(currY,currX);
         currY--;
         currX = 5;
-        delay(250);
-        writeTemp(currY+1,1);
+        saveTemp(currY,currX);
         }
       }
       else{
-        saveTemp(currY,currX);
-        currX-=2;
+
+        writeTemp(currY,currX);
         delay(250);
-        writeTemp(currY, currX-2);
+        currX-=2;
+        saveTemp(currY,currX);
       }
     }else{
       if(currX != 1){
-        saveTemp(currY,currX);
-        currX-=2;
+       writeTemp(currY,currX);
         delay(250);
-        writeTemp(currY, currX-2);
+        currX-=2;
+        saveTemp(currY,currX);
       }
       else{
         return;
@@ -280,31 +287,33 @@ void moveCursor(int direction){
     if(currY != 3){
       if(currX == 5){
         if (currY == 1 || currY == 2){
-        saveTemp(currY,currX);
+        writeTemp(currY,currX);
+        delay(250);
         currY++;
         currX = 1;
-        delay(250);
-        writeTemp(currY-1, 5);
+        saveTemp(currY,currX);
         }
       }
       else{
-        saveTemp(currY,currX);
-        currX+=2;
+       writeTemp(currY,currX);
         delay(250);
-        writeTemp(currY, currX-2);
+        currX+=2;
+        saveTemp(currY,currX);
+
       }
     }else{
-      saveTemp(currY,currX);
       if(currX != 5){
-        currX+=2;
+        writeTemp(currY,currX);
         delay(250);
-        writeTemp(currY, currX-2);
+        currX+=2;
+        saveTemp(currY,currX);
       }
       else{
         return;
       }
     }
   }
+
   //boardArr[currY-1][currX] = 43;
   textbuffer[currY][currX] = 43;
   display_update();
@@ -312,18 +321,39 @@ void moveCursor(int direction){
   return;
 }
 
-void place(int turn) {
-  if (turn == 1)
-  {
-    writeTemp(currY,currX);
-    textbuffer[currY][currX] = 88;
-    turn = 2;
+void placeMarker(int type){
+  if(type == 1){
+    textbuffer[currY][currX] = 88; // X Turn
+    boardArr[currY-1][currX] = 88;
   }
-  else if (turn == 2)
+  else if(type == 2) {
+    textbuffer[currY][currX] = 79; // O Turn
+    boardArr[currY-1][currX] = 79;
+  }
+}
+
+void place(void) {
+  if(boardArr[currY-1][currX] == 43)
   {
-    writeTemp(currY,currX);
-    textbuffer[currY][currX] = 79;
-    turn = 1;
+    if (turn == 1)      //X
+    {
+      placeMarker(turn);
+      turn = 2;
+      display_update();
+    }
+    else if (turn == 2) //O
+    {
+      placeMarker(turn);
+      turn = 1;
+      display_update();
+    }
+    display_string(0, "  OK  ");
+    createCursor();
+  }
+  else
+  {
+    display_string(0, "  ERROR  ");
+    return;
   }
 
 }
