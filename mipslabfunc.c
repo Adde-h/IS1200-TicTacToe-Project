@@ -287,13 +287,13 @@ int checkWin(void)
 
 }
 
-void displayTurn(t)
+void displayTurn(void)
 {
-  if(t == 1)
+  if(turn == 1)
   {
     textbuffer[2][8] = 88; // X 
   }
-  else if (t == 2)
+  else if (turn == 2)
   {
     textbuffer[2][8] = 79; // O
   }
@@ -345,7 +345,6 @@ void moveCursor(int direction){
         }
       }
       else{
-
         writeTemp(currY,currX);
         delay(250);
         currX-=2;
@@ -379,7 +378,6 @@ void moveCursor(int direction){
         delay(250);
         currX+=2;
         saveTemp(currY,currX);
-
       }
     }else{
       if(currX != 5){
