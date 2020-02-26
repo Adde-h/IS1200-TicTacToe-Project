@@ -28,9 +28,8 @@ static void num32asc( char * s, int );
 int currY;
 int currX;
 char temp;
+int count;
 int turn = 1; // Xturn = 1, OTurn = 2;
-
-
 
 int getsw( void )
 {
@@ -227,6 +226,84 @@ PROJECT FUNCTIONS
 ############################
 */
 
+int checkWin(void)
+{
+  int p;
+
+  if(count == 9)
+  {
+    display_string(0, "It's a TIE!");
+    display_update();
+    count = 0;
+  }
+
+  for(p = 0; p < 3; p++) //Kollar vinst vågrätt
+  {
+    if(boardArr[p][1] == boardArr[p][3] && boardArr[p][3] == boardArr[p][5])
+    {
+      if(boardArr[p][1] == 88)
+      {
+        display_string(0, "X WINS!");
+        display_update();
+      }
+      else if (boardArr[0][p] == 79)
+      {
+        display_string(0, "O WINS!");
+        display_update();
+      }
+    }
+
+    for(p = 1; p <= 5; p+=2) //Kollar vinst lodrätt
+    {
+      if(boardArr[0][p] == boardArr[1][p] && boardArr[1][p] == boardArr[2][p])
+      {
+        if(boardArr[0][p] == 88)
+        {
+          display_string(0, "X WINS!");
+          display_update();
+        }
+        else if (boardArr[0][p] == 79)
+        {
+          display_string(0, "O WINS!");
+          display_update();
+        }
+      }
+    }
+  }
+    if (((boardArr[0][1] == boardArr[1][3]) && (boardArr[0][1] == boardArr[2][5])) ||
+        ((boardArr[0][5] == boardArr[1][3]) && (boardArr[0][5] == boardArr[2][1]))) // Kollar vinst diagonalt
+        {
+          if(boardArr[1][3] == 88)
+          {
+            display_string(0, "X WINS!");
+            display_update();
+          }
+          else if (boardArr[1][3] == 79)
+          {
+            display_string(0, "O WINS!");
+            display_update();
+          }
+        }
+
+}
+
+void displayTurn(t)
+{
+  if(t == 1)
+  {
+    textbuffer[2][8] = 88; // X 
+  }
+  else if (t == 2)
+  {
+    textbuffer[2][8] = 79; // O
+  }
+
+  textbuffer[2][10] = 84; // T
+  textbuffer[2][11] = 85; // U
+  textbuffer[2][12] = 82; // R
+  textbuffer[2][13] = 78; // N
+}
+
 void saveTemp(int Y, int X)
 {
   temp = textbuffer[Y][X];
@@ -239,12 +316,15 @@ void writeTemp(int Y, int X){
 }
 
 void createCursor(void) {
+  checkWin();
+  displayTurn(turn);
   temp = textbuffer[1][1];
   delay(250);
   textbuffer[1][1] = 43; //row 0 textbuffer unused
   //boardArr[0][1] = 43; //y-1
   currX = 1;
   currY = 1;
+  count++;
   display_update();
 }
 
