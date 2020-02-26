@@ -225,13 +225,13 @@ PROJECT FUNCTIONS
 ############################
 */
 
-void saveTemp(int currY, int currX)
+void saveTemp(int Y, int X)
 {
-  textbuffer[currY][currX] = temp;
+  temp = textbuffer[Y][X];
 }
 
 void createCursor(void) {
-  temp = textbuffer[1][1];
+  saveTemp(1,1);
   textbuffer[1][1] = 43; //row 0 textbuffer unused
   //boardArr[0][1] = 43; //y-1
   currX = 1;
