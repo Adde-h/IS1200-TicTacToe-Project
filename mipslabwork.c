@@ -21,13 +21,12 @@
 char textstring[] = "text, more text, and even more text!";
 int timeoutcount = 0;
 int mytime = 0x0000;
-
-
-
-//Project variables
-int screen = 0; // Menu = 0, Instr = 1, Hi-Score = 2, Game = 3;
-int win = 0;
-
+int hsPoints[2];
+char name[2][3] = {
+	{'A','D','H'},	//Första plats initialer
+	{'A','H','J'}	//Andra plats initialer
+};	
+int u = 0;
   
 int menu(void)
 {
@@ -53,8 +52,19 @@ int instr(void)
 int hiScore(void)
 {
 	display_string(0, "  High Score  ");
-	display_string(1, "1. AHJ ");
-	display_string(2, "2. AHN ");
+	int i;
+	display_string(1," "); //rensar rad 1
+	for(i = 0; i < 3; i++)
+	{
+		display_line(1,i,name[0][i]);
+	}
+	
+	display_string(2," "); //rensar rad 2
+	for(i = 0; i < 3; i++)
+	{
+		display_line(2,i,name[1][i]);
+	}
+
 	display_string(3, "Back press BTN 1");
 	display_update();
 	screen = 2;
@@ -68,6 +78,40 @@ int board(void)
     display_string(3, "|-|-|-|");
 	createCursor();
 	display_update();
+}
+
+int writeHighScore(void)
+{
+	letter = 65;
+	hiScore();
+	while (u < 3)
+	{
+		textbuffer[1][u] = letter;
+		display_update();
+	}
+	delay(250);
+	if(screen == 4)
+	{
+		display_string(0, "Enter HiScore Player");
+		if(playerX == 1)
+		{
+			textbuffer[0][16] = 88;
+		}
+		else if(playerO == 1)
+		{
+			textbuffer[0][16] = 79;
+		}
+		int i;
+
+		for(i = 0; i <= 3; i++)
+		{
+			display_line(1,i,name[i]);
+		}
+		display_string(3, "Back press BTN 1");
+		display_update();
+	}
+	display_update();
+
 }
 
 /* Interrupt Service Routine */
@@ -88,17 +132,6 @@ void user_isr( void ) {
 		PORTE =  PORTE + 0x1; //Incrementing leds by 1 every second
     }
   }
-    
-  // code for counting LED & Reseting when full
-  if(IFS(0) & 0x80){
-    // clearing flag
-    IFS(0) = 0;
-    // for LEDs ticking
-    PORTE =  PORTE + 0x1;
-    // only for the last 8 bits
-	TRISECLR = 0xFF;
-  }
-
   return;
 }
 
@@ -137,17 +170,13 @@ void labwork( void )
 	int btn1 = getbtn1();
 
 
-/*
-BTN 4: Left
-BTN 3: Confirm
-BTN 2: Right
-*/
-
 /*			Menu Buttons 		*/
 	if ((btn & 1) && screen == 0) //BTN 2
 	{
 		
 		board();	//Start Game
+		playerX = 0;
+		playerO = 0;
 		delay(1000);
 		screen = 3;
 		
@@ -176,23 +205,35 @@ BTN 2: Right
 	}
 
 /*			Game Buttons			*/
-else if ((btn & 1) && screen == 3) //BTN 2
+	else if ((btn & 1) && screen == 3) //BTN 2
 	{
-		moveCursor(2);
-		
+		moveCursor(2);	
 	}
-else if ((btn & 4) && screen == 3) //BTN 4
+	else if ((btn & 4) && screen == 3) //BTN 4
 	{
 		moveCursor(1);
 	}
 
-else if ((btn & 2) && screen == 3) //BTN 3
+	else if ((btn & 2) && screen == 3) //BTN 3
 	{
 		place();
 	}
 
-// time2string( textstring, mytime );
- // display_string( 3, textstring );
- // display_update();
- // tick( &mytime );
+/*		Write High Score Buttons		*/
+
+	if (((btn & 4) && screen == 4) && letter >= 65) //BTN 4, Bokstav bak
+	{
+		letter--;
+	}
+
+	if (((btn & 1) && screen == 4) && letter <= 90) //BTN 2, Bokstav fram
+	{
+		letter++;
+	}
+
+	if (((btn & 2) && screen == 4) && u <= 3) //BTN 3
+	{
+		name[0][u++] = letter;
+		display_update();
+	}
 }

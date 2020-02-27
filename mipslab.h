@@ -43,6 +43,10 @@ extern const uint8_t const icon[128];
 extern char textbuffer[4][16];
 
 extern char boardArr[3][7];
+extern int playerX;
+extern int playerO;
+int screen; // Menu = 0, Instr = 1, Hi-Score = 2, Game = 3, Write Highscore = 4;
+char letter;
 
 /* Declare functions written by students.
    Note: Since we declare these functions here,

@@ -30,11 +30,13 @@ int currX;
 char temp;
 int count;
 int turn = 1; // Xturn = 1, OTurn = 2;
+playerX = 0;
+playerO = 0;
 
 int getsw( void )
 {
 
-    return (PORTD >> 8) & 0x000F; //Shiftar 8 bitar till höger och maskerar resten
+  return (PORTD >> 8) & 0x000F; //Shiftar 8 bitar till höger och maskerar resten
 
 }
 
@@ -166,6 +168,29 @@ void display_string(int line, char *s) {
 			textbuffer[line][i] = ' ';
 }
 
+void display_line(int row, int column, int text)
+{
+  char *s;
+  if(row < 0 || row >= 4)
+  {
+    return;
+  }
+  if(!s)
+  {
+    return;
+  }
+  *s=(char)text;
+    if(*s)
+    {
+      textbuffer[row][column] = *s;
+      s++;
+    }
+    else
+    {
+      textbuffer[row][column] = ' ';
+    }
+}
+
 /*void display_image(int x, const uint8_t *data) {
 	int i, j;
 	
@@ -244,11 +269,13 @@ int checkWin(void)
       if(boardArr[p][1] == 88)
       {
         display_string(0, "X WINS!");
+        playerX = 1;
         display_update();
       }
       else if (boardArr[0][p] == 79)
       {
         display_string(0, "O WINS!");
+        playerO = 1;
         display_update();
       }
     }
@@ -260,11 +287,13 @@ int checkWin(void)
         if(boardArr[0][p] == 88)
         {
           display_string(0, "X WINS!");
+          playerX = 1;
           display_update();
         }
         else if (boardArr[0][p] == 79)
         {
           display_string(0, "O WINS!");
+          playerO = 1;
           display_update();
         }
       }
@@ -272,18 +301,27 @@ int checkWin(void)
   }
     if (((boardArr[0][1] == boardArr[1][3]) && (boardArr[0][1] == boardArr[2][5])) ||
         ((boardArr[0][5] == boardArr[1][3]) && (boardArr[0][5] == boardArr[2][1]))) // Kollar vinst diagonalt
-        {
-          if(boardArr[1][3] == 88)
-          {
-            display_string(0, "X WINS!");
-            display_update();
-          }
-          else if (boardArr[1][3] == 79)
-          {
-            display_string(0, "O WINS!");
-            display_update();
-          }
-        }
+    {
+      if(boardArr[1][3] == 88)
+      {
+        display_string(0, "X WINS!");
+        playerX = 1;
+        display_update();
+      }
+      else if (boardArr[1][3] == 79)
+      {
+        display_string(0, "O WINS!");
+        playerO = 1;
+        display_update();
+      }
+    }
+
+    if(playerX == 1 || playerO == 1)
+    {
+      screen = 4;
+      writeHighScore();
+      display_update();
+    }
 
 }
 
@@ -317,17 +355,18 @@ void writeTemp(int Y, int X){
 
 void createCursor(void) {
   checkWin();
-  displayTurn(turn);
-  temp = textbuffer[1][1];
-  delay(250);
-  textbuffer[1][1] = 43; //row 0 textbuffer unused
-  //boardArr[0][1] = 43; //y-1
-  currX = 1;
-  currY = 1;
-  count++;
+  if((playerX != 1 || playerO != 1))
+  {
+    displayTurn();
+    temp = textbuffer[1][1];
+    delay(250);
+    textbuffer[1][1] = 43; //row 0 textbuffer unused
+    currX = 1;
+    currY = 1;
+    count++;
+  }
   display_update();
 }
-
 
  //1 - left
  //2 - right
