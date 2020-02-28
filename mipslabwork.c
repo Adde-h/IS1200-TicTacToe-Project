@@ -19,14 +19,16 @@
 #define TMR2PERIOD ((80000000 / 256) / 10)
 
 char textstring[] = "text, more text, and even more text!";
-int timeoutcount = 0;
+int timeoutcountX = 0;
+int timeoutcountO = 0;
 int mytime = 0x0000;
 int hsPoints[2];
 char name[2][3] = {
 	{'A','D','H'},	//Första plats initialer
 	{'A','H','J'}	//Andra plats initialer
 };	
-int u = 0;
+int xTimer = 0xFF;
+int oTimer = 0xFF;
   
 int menu(void)
 {
@@ -56,13 +58,15 @@ int hiScore(void)
 	display_string(1," "); //rensar rad 1
 	for(i = 0; i < 3; i++)
 	{
-		display_line(1,i,name[0][i]);
+		textbuffer[1][i] = name[0][i];
+		//display_line(1,i,name[0][i]);
 	}
 	
 	display_string(2," "); //rensar rad 2
 	for(i = 0; i < 3; i++)
 	{
-		display_line(2,i,name[1][i]);
+		textbuffer[2][i] = name[0][i];
+		//display_line(2,i,name[1][i]);
 	}
 
 	display_string(3, "Back press BTN 1");
@@ -80,60 +84,54 @@ int board(void)
 	display_update();
 }
 
-int writeHighScore(void)
-{
-	letter = 65;
-	hiScore();
-	while (u < 3)
-	{
-		textbuffer[1][u] = letter;
-		display_update();
-	}
-	delay(250);
-	if(screen == 4)
-	{
-		display_string(0, "Enter HiScore Player");
-		if(playerX == 1)
-		{
-			textbuffer[0][16] = 88;
-		}
-		else if(playerO == 1)
-		{
-			textbuffer[0][16] = 79;
-		}
-		int i;
-
-		for(i = 0; i <= 3; i++)
-		{
-			display_line(1,i,name[i]);
-		}
-		display_string(3, "Back press BTN 1");
-		display_update();
-	}
-	display_update();
-
-}
-
 /* Interrupt Service Routine */
-void user_isr( void ) {
+void user_isr( void ) 
+{
+	//check flag
+	if(IFS(0) & 0x100){
+		IFS(0) = 0; //clear flag
+		if(timerStart == 1)
+		{
+			if(turn == 1){
+				PORTE = xTimer;
+				timeoutcountX++;
+				if (timeoutcountX == 15){ //40
+					timeoutcountX = 0;
+					xTimer -= 0x1;
+					xTimer = (xTimer / 2);
+					PORTE = xTimer;
+				}
+				if(xTimer == 0x0){
+					playerO = 1;
+					checkWin();
+				}
+			}
+			if(turn == 2){
+				PORTE = oTimer;
+				timeoutcountO++;
+				if (timeoutcountO == 15){ //40
+					timeoutcountO = 0;
+					oTimer -= 0x1;
+					oTimer = (oTimer/2);
+					PORTE = oTimer;
+				}
+				if(oTimer == 0x0){
+					playerX = 1;
+					checkWin();
+				}
+			}
 
-  // check flag
-  if(IFS(0) & 0x100){
-	// clearing flag
-	IFS(0) = 0;
-	timeoutcount++;
-
-	if (timeoutcount == 10){
-	/*    time2string( textstring, mytime );
-	// display_string( 0, textstring );
-		display_update();
-		tick( &mytime ); */
-		timeoutcount = 0;
-		PORTE =  PORTE + 0x1; //Incrementing leds by 1 every second
-    }
-  }
-  return;
+			/*timeoutcount++;
+			if (timeoutcount == 15){ //75
+				timeoutcount = 0;
+				PORTE *= 2;
+				PORTE += 0x1;
+			}*/
+		}
+	}
+	return;
 }
+
 
 /* Lab-specific initialization goes here */
 void labinit( void )
@@ -231,9 +229,10 @@ void labwork( void )
 		letter++;
 	}
 
-	if (((btn & 2) && screen == 4) && u <= 3) //BTN 3
+	if (((btn & 2) && screen == 4) && initials <= 3) //BTN 3
 	{
-		name[0][u++] = letter;
+		name[0][initials] = letter;
+		initials++;
 		display_update();
 	}
 }

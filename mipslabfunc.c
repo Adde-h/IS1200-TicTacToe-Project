@@ -29,9 +29,7 @@ int currY;
 int currX;
 char temp;
 int count;
-int turn = 1; // Xturn = 1, OTurn = 2;
-playerX = 0;
-playerO = 0;
+
 
 int getsw( void )
 {
@@ -168,9 +166,8 @@ void display_string(int line, char *s) {
 			textbuffer[line][i] = ' ';
 }
 
-void display_line(int row, int column, int text)
+/*void display_line(int row, int column, char *s)
 {
-  char *s;
   if(row < 0 || row >= 4)
   {
     return;
@@ -179,7 +176,7 @@ void display_line(int row, int column, int text)
   {
     return;
   }
-  *s=(char)text;
+  *s=*s + 48;
     if(*s)
     {
       textbuffer[row][column] = *s;
@@ -189,7 +186,7 @@ void display_line(int row, int column, int text)
     {
       textbuffer[row][column] = ' ';
     }
-}
+}*/
 
 /*void display_image(int x, const uint8_t *data) {
 	int i, j;
@@ -250,6 +247,46 @@ static void num32asc( char * s, int n )
 PROJECT FUNCTIONS
 ############################
 */
+
+int writeHighScore(void)
+{
+
+  int u = 0;
+	letter = 65;
+	hiScore();
+	while (u < 3)
+	{
+		textbuffer[1][initials] = letter;
+    u++;
+		display_update();
+	}
+	delay(250);
+	if(screen == 4)
+	{
+		display_string(0, "Enter HiScore Player");
+		if(playerX == 1)
+		{
+			textbuffer[0][16] = 88; //X
+		}
+		else if(playerO == 1)
+		{
+			textbuffer[0][16] = 79; //O
+		}
+		int i;
+			//#############################
+			//FIX
+			/*
+		for(i = 0; i <= 3; i++)
+		{
+			
+			//display_line(1,i,name[i]);
+		}*/
+		display_string(3, "Back press BTN 1");
+		display_update();
+	}
+	display_update();
+
+}
 
 int checkWin(void)
 {
@@ -325,6 +362,16 @@ int checkWin(void)
 
 }
 
+
+//UNUSED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+/*void initTimer() {
+  if(turn == 1){
+    xTimer = PORTE;
+  }else if(turn == 2){
+    oTimer = PORTE;
+  }
+}*/
+
 void displayTurn(void)
 {
   if(turn == 1)
@@ -358,6 +405,7 @@ void createCursor(void) {
   if((playerX != 1 || playerO != 1))
   {
     displayTurn();
+    timerStart = 1;
     temp = textbuffer[1][1];
     delay(250);
     textbuffer[1][1] = 43; //row 0 textbuffer unused
@@ -434,7 +482,6 @@ void moveCursor(int direction){
   //boardArr[currY-1][currX] = 43;
   textbuffer[currY][currX] = 43;
   display_update();
-  PORTE = 0x15;
   return;
 }
 
@@ -464,12 +511,14 @@ void place(void) {
       turn = 1;
       display_update();
     }
-    display_string(0, "  OK  ");
+	  display_string(0, "  TicTacToe  "); //clr
+    display_update();
     createCursor();
   }
   else
   {
-    display_string(0, "  ERROR  ");
+    display_string(0, "ILLEGAL MOVE");
+    display_update();
     return;
   }
 

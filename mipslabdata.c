@@ -15,6 +15,13 @@ char boardArr[3][7] = {
 	{124, 43, 124, 43, 124, 43, 124},
 	{124, 43, 124, 43, 124, 43, 124}
 };
+int screen = 0;
+char letter;
+int timerStart = 0;
+int playerX = 0;
+int playerO = 0;
+int turn = 1; // Xturn = 1, OTurn = 2;
+int initials = 0;
 
 const uint8_t const font[] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
