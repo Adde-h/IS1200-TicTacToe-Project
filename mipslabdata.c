@@ -20,14 +20,23 @@ char resetArr[3][7] = {
 	{124, 43, 124, 43, 124, 43, 124},
 	{124, 43, 124, 43, 124, 43, 124}
 };
+char name[3][3] = {
+	{' ', ' ', ' '}, //Första plats initialer
+	{' ', ' ', ' '},
+	{' ', ' ', ' '}
+};
+int nameScore[2] = {0,0};
+//char tempName[3] = "";
 int screen = 0;
-char letter;
+char letter = 65;
 int timerStart = 0;
 int win = 0; //0 = no win, 1 = xwin, 2 = owin, 3 = tie
 int turn = 1; // Xturn = 1, OTurn = 2
 int initials = 0;
 char bin[9] = "";
 char out[2] = "";
+char timeSc[2] = "";
+int count = 0;
 
 
 const uint8_t const font[] = {

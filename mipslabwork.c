@@ -24,10 +24,7 @@ int timeoutcountX = 0;
 int timeoutcountO = 0;
 int mytime = 0x0000;
 int hsPoints[2];
-char name[2][3] = {
-	{'A', 'D', 'H'}, //Första plats initialer
-	{'A', 'H', 'J'}  //Andra plats initialer
-};
+
 int xTimer = 0xFF;
 int oTimer = 0xFF;
 
@@ -47,75 +44,75 @@ int instr(void)
 	display_string(1, "BTN 3: Confirm");
 	display_string(2, "BTN 2: Right");
 	display_string(3, "Back press BTN 1");
-
+	//REMOVE LATER
+	char* gay = name[2];
+	display_string(0, gay);
+	///
 	display_update();
 	screen = 1;
 }
 
+int writeHiScore(void)
+{
+	screen = 4;
+	clearScreen();
+
+	//Show who won
+	display_string(0, "Winner:     P: "); //Base
+	if (win == 1) //X-win
+	{
+		textbuffer[0][8] = 88; //X
+		timeLeft(xTimer, 0, 14, 1);
+	}
+	else if (win == 2) //O-win
+	{
+		textbuffer[0][8] = 79; //O
+		timeLeft(oTimer, 0, 14, 1);
+	}
+	display_string(1, "Enter name:");
+
+	textbuffer[2][0] = 65; //A
+	display_string(3, "Back press BTN 1");
+	display_update();
+}
+
 int hiScore(void)
 {
+	clearScreen();
 	display_string(0, "  High Score  ");
+
+	textbuffer[1][0] = 49; //"1"
+	textbuffer[1][1] = 46; //"."
+
+	textbuffer[2][0] = 50; //"2"
+	textbuffer[2][1] = 46; //"."
+
+	//Show names
 	int i;
-	display_string(1, " "); //rensar rad 1
-	for (i = 0; i < 3; i++)
-	{
-		textbuffer[1][i] = name[0][i];
-		//display_line(1,i,name[0][i]);
+	char sc[2] = "";
+	if(nameScore[0] != 0){
+		for (i = 2; i < 5; i++)
+		{
+			textbuffer[1][i] = name[0][i-2]; //Display name
+			itoa(nameScore[0], sc);	
+			textbuffer[1][6] = sc[0]; //Score
+			textbuffer[1][7] = sc[1]; //Score
+		}
+	}
+	if(nameScore[1] != 0){
+		for (i = 2; i < 5; i++)
+		{
+			textbuffer[2][i] = name[1][i-2]; //Display name
+			itoa(nameScore[1], sc);	
+			textbuffer[2][6] = sc[0]; //Score
+			textbuffer[2][7] = sc[1]; //Score
+		}
 	}
 
-	display_string(2, " "); //rensar rad 2
-	for (i = 0; i < 3; i++)
-	{
-		textbuffer[2][i] = name[1][i];
-		//display_line(2,i,name[1][i]);
-	}
-
+	
 	display_string(3, "Back press BTN 1");
 	display_update();
 	screen = 2;
-}
-
-int writeHiScore(void)
-{
-	int u = 0;
-	letter = 65;
-	clearScreen();
-	/*
-	if (u < 3)
-	{
-		textbuffer[1][initials] = letter;
-		u++;
-		display_update();
-	}*/
-
-	display_string(0, timeLeft(0xF1)) ;
-	textbuffer[0][5] = timeLeft(0xFF);	
-
-
-
-	//display_string(0, "Winner: ");
-
-
-
-	display_update();
-	if (win == 1)
-	{
-		textbuffer[0][11] = 88; //X
-		
-	}
-	else if (win == 2)
-	{
-		textbuffer[0][11] = 79; //O
-	}
-	int i;
-	/*
-	for(i = 0; i <= 3; i++)
-	{
-
-	//display_line(1,i,name[i]);
-	}*/
-	display_string(3, "Back press BTN 1");
-	display_update();
 }
 
 int board(void)
@@ -140,8 +137,8 @@ void user_isr(void)
 			{
 				PORTE = xTimer;
 				timeoutcountX++;
-				if (timeoutcountX == 5)
-				{ //40
+				if (timeoutcountX == 40)
+				{ 
 					timeoutcountX = 0;
 					xTimer -= 0x1;
 					xTimer = (xTimer / 2);
@@ -158,8 +155,8 @@ void user_isr(void)
 			{
 				PORTE = oTimer;
 				timeoutcountO++;
-				if (timeoutcountO == 5)
-				{ //40
+				if (timeoutcountO == 40)
+				{
 					timeoutcountO = 0;
 					oTimer -= 0x1;
 					oTimer = (oTimer / 2);
@@ -172,13 +169,6 @@ void user_isr(void)
 					initWin();
 				}
 			}
-
-			/*timeoutcount++;
-			if (timeoutcount == 15){ //75
-				timeoutcount = 0;
-				PORTE *= 2;
-				PORTE += 0x1;
-			}*/
 		}
 	}
 	return;
@@ -218,19 +208,18 @@ void labwork(void)
 	int btn = getbtns();
 	int btn1 = getbtn1();
 
-	/*			GLOBAL Buttons 		*/
+	/*			GLOBAL Buttons 			*/
 	if ((btn1 & 1)) //BTN 1
 	{
 		menu(); //Back to menu
+		resetGame(); //Resets game
 	}
 
 	/*			Menu Buttons 		*/
 	else if ((btn & 1) && screen == 0) //BTN 2
 	{
-
 		board(); //Start Game
-		win = 0;
-		delay(1000);
+		delay(500);
 		screen = 3;
 	}
 
@@ -261,20 +250,41 @@ void labwork(void)
 
 	/*		Write High Score Buttons		*/
 
-	else if (((btn & 4) && screen == 4) && letter >= 65) //BTN 4, Bokstav bak
+	else if (((btn & 4) && screen == 4) && letter > 65) //BTN 4, Bokstav bak
 	{
 		letter--;
+		textbuffer[2][initials] = letter;
+		display_update();
+		delay(250);
 	}
 
-	else if (((btn & 1) && screen == 4) && letter <= 90) //BTN 2, Bokstav fram
+	else if (((btn & 1) && screen == 4) && letter < 90) //BTN 2, Bokstav fram
 	{
 		letter++;
+		textbuffer[2][initials] = letter;
+		display_update();
+		delay(250);
 	}
 
-	else if (((btn & 2) && screen == 4) && initials <= 3) //BTN 3
+	else if (((btn & 2) && screen == 4) && initials < 3) //BTN 3
 	{
-		name[0][initials] = letter;
+		//writeToTemp(initials, letter);
+		name[2][initials] = letter;
+		//tempName[initials] = letter;
+		textbuffer[2][initials] = letter;
+		if(initials != 2){
+			textbuffer[2][initials+1] = 65;
+		}
 		initials++;
 		display_update();
+		delay(250);
+		if(initials == 3)
+		{
+			textbuffer[2][initials] = 0;
+			resetGame();
+			delay(250);
+			menu();
+		}
+		letter = 65;
 	}
 }

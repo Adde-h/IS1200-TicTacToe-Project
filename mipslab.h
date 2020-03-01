@@ -44,6 +44,9 @@ extern char textbuffer[4][16];
 
 extern char boardArr[3][7];
 extern char resetArr[3][7];
+extern char name[3][3];
+extern int nameScore[2];
+//extern char tempName[3];
 extern int win;
 extern int screen; // Menu = 0, Instr = 1, Hi-Score = 2, Game = 3, Write Highscore = 4;
 extern char letter;
@@ -52,6 +55,9 @@ extern int turn;
 extern int initials;
 extern char bin[9];
 extern char out[2];
+extern char timeSc[2];
+extern int count;
+extern int xTimer, oTimer;
 
 
 /* Declare functions written by students.

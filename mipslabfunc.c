@@ -29,7 +29,6 @@ static void num32asc( char * s, int );
 int currY;
 int currX;
 char temp;
-int count;
 
 
 
@@ -168,28 +167,6 @@ void display_string(int line, char *s) {
 			textbuffer[line][i] = ' ';
 }
 
-/*void display_line(int row, int column, char *s)
-{
-  if(row < 0 || row >= 4)
-  {
-    return;
-  }
-  if(!s)
-  {
-    return;
-  }
-  *s=*s + 48;
-    if(*s)
-    {
-      textbuffer[row][column] = *s;
-      s++;
-    }
-    else
-    {
-      textbuffer[row][column] = ' ';
-    }
-}*/
-
 /*void display_image(int x, const uint8_t *data) {
 	int i, j;
 	
@@ -250,14 +227,112 @@ PROJECT FUNCTIONS
 ############################
 */
 
+/*int showNames() {
+	int i, j;
+	for(i = 0; i < 2; i++) {
+		for(j = 0; j < 3; j++) {
+      		texbuffer[i][j] = name[i][j];
+		}
+   }
+}*/
 
-char timeLeft(int hexad) {
-	hexToStr(hexad);
-	char *res = out;
-	hexToBin(res);
-	int calc = countOnes(bin) *4;
-	
-	return calc;
+/*int writeToTemp(int loop, char let){
+	tempName[initials] = let;
+}*/
+
+int compareScore(int newScore) 
+{
+	int c;
+  	if(newScore > nameScore[0])
+	{
+		for (c = 0; c < 3; c++)
+		{
+			name[1][c] = name[0][c];
+		}
+
+		nameScore[1] = nameScore[0];
+		
+		for (c = 0; c < 3; c++)
+		{
+			name[0][c] = name[2][c];
+		}
+
+		nameScore[0] = newScore;
+	}
+	else if(newScore < nameScore[0])
+	{
+		if(newScore < nameScore[1])
+		{
+			return;
+		}
+		else
+		{
+			nameScore[1] = newScore;
+			for (c = 0; c < 3; c++)
+			{
+				name[1][c] = name[2][c];
+			}
+		}
+	}
+}
+
+int resetGame(){
+	win = 0;
+	count = 0;
+	resetBoardArr();
+	xTimer = 0xFF;
+	oTimer = 0xFF;
+	currX = 0;
+	currY = 0;
+	timerStart = 0;
+	turn = 1;
+	initials = 0;
+	letter = 65;
+}
+
+//https://en.wikibooks.org/wiki/C_Programming/stdlib.h/itoa
+ void reverse(char s[])
+ {
+     int i, j;
+     char c;
+ 
+     for (i = 0, j = strlen(s)-1; i<j; i++, j--) {
+         c = s[i];
+         s[i] = s[j];
+         s[j] = c;
+     }
+ }
+
+ void itoa(int n, char s[])
+ {
+     int i, sign;
+ 
+     if ((sign = n) < 0)  /* record sign */
+         n = -n;          /* make n positive */
+     i = 0;
+     do {       /* generate digits in reverse order */
+         s[i++] = n % 10 + '0';   /* get next digit */
+     } while ((n /= 10) > 0);     /* delete it */
+     if (sign < 0)
+         s[i++] = '-';
+     s[i] = '\0';
+     reverse(s);
+ }
+
+
+int timeLeft(int hexad, int x, int y, int compare) { //hexad = 0xFF (int)
+	hexToStr(hexad); 					//0xFF -> "0xFF" (str)
+	char *res = out; 					
+	hexToBin(res);						//"0xFF" (str) -> "11111111"
+	int calc = countOnes(bin) *4;		//8*4 (int)
+	itoa(calc, timeSc);					//20 (int) -> "20" (str)
+  	int b;
+	for(b = 0; b < 2; b++){
+		textbuffer[x][y+b] = timeSc[b];
+	}
+	if(compare == 1){
+		compareScore(calc);
+	}
 }
 
 int hexToStr(int hexa){
@@ -377,53 +452,11 @@ int winExists(void) {
   }
 }
 
-//Removed
-/*
-int writeHighScore(void)
-{
-  int u = 0;
-	letter = 65;
-  clearScreen();
-	if (u < 3)
-	{
-		textbuffer[1][initials] = letter;
-    u++;
-		display_update();
-	}
-	delay(250);
-	if(screen == 4)
-	{
-		display_string(0, "TEST");
-    display_update();
-		if(playerX == 1)
-		{
-			textbuffer[0][16] = 88; //X
-		}
-		else if(playerO == 1)
-		{
-			textbuffer[0][16] = 79; //O
-		}
-		int i;
-			//#############################
-			//FIX
-			/*
-		for(i = 0; i <= 3; i++)
-		{
-			
-			//display_line(1,i,name[i]);
-		}
-		display_string(3, "Back press BTN 1");
-		display_update();
-	}
-	display_update();
-
-}
-*/
-
 int initWin(){
 	if(winExists() == 1){
+    	timerStart = 0;
 		screen = 4;
-		resetBoardArr();
+		delay(250);
 		writeHiScore();
 	}
 }
@@ -432,18 +465,27 @@ int checkWin(void)
 {
   int p;
 
-  if(count == 9)
-  {
-    display_string(0, "It's a TIE!");
-	  win = 3;
-    display_update();
-    count = 0;
-	resetBoardArr();
-  }
+	if((boardArr[1][1] == boardArr[1][3]) && (boardArr[1][3] == boardArr[1][5]))
+    {
+      if(boardArr[1][1] == 88)
+      {
+        display_string(0, "X WINS!");
+		display_update();
+        win = 1;
+		initWin();
+      }
+      else if (boardArr[1][p] == 79)
+      {
+        display_string(0, "O WINS!");
+		display_update();
+        win = 2;
+		initWin();
+      }
+    }
 
   for(p = 0; p < 3; p++) //Kollar vinst vågrätt
   {
-    if(boardArr[p][1] == boardArr[p][3] && boardArr[p][3] == boardArr[p][5])
+    if((boardArr[p][1] == boardArr[p][3]) && (boardArr[p][3] == boardArr[p][5]))
     {
       if(boardArr[p][1] == 88)
       {
@@ -500,6 +542,15 @@ int checkWin(void)
 		initWin();
       }
 	}
+	else if(count == 9 && win == 0)
+  	{
+		display_string(0, "It's a TIE!");
+		win = 3;
+		display_update();
+		count = 0;
+		resetBoardArr();
+  	}
+
 }
 
 
