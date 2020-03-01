@@ -43,13 +43,16 @@ extern const uint8_t const icon[128];
 extern char textbuffer[4][16];
 
 extern char boardArr[3][7];
-extern int playerX;
-extern int playerO;
+extern char resetArr[3][7];
+extern int win;
 extern int screen; // Menu = 0, Instr = 1, Hi-Score = 2, Game = 3, Write Highscore = 4;
 extern char letter;
 int timerStart;
 extern int turn;
 extern int initials;
+extern char bin[9];
+extern char out[2];
+
 
 /* Declare functions written by students.
    Note: Since we declare these functions here,
@@ -58,6 +61,7 @@ extern int initials;
 /* Written as part of asm lab: delay, time2string */
 void delay(int);
 void time2string( char *, int );
+char hexasc( int );
 /* Written as part of i/o lab: getbtns, getsw, enable_interrupt */
 int getbtns(void);
 int getsw(void);

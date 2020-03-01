@@ -15,13 +15,20 @@ char boardArr[3][7] = {
 	{124, 43, 124, 43, 124, 43, 124},
 	{124, 43, 124, 43, 124, 43, 124}
 };
+char resetArr[3][7] = {
+	{124, 43, 124, 43, 124, 43, 124},
+	{124, 43, 124, 43, 124, 43, 124},
+	{124, 43, 124, 43, 124, 43, 124}
+};
 int screen = 0;
 char letter;
 int timerStart = 0;
-int playerX = 0;
-int playerO = 0;
-int turn = 1; // Xturn = 1, OTurn = 2;
+int win = 0; //0 = no win, 1 = xwin, 2 = owin, 3 = tie
+int turn = 1; // Xturn = 1, OTurn = 2
 int initials = 0;
+char bin[9] = "";
+char out[2] = "";
+
 
 const uint8_t const font[] = {
 	0, 0, 0, 0, 0, 0, 0, 0,

@@ -9,6 +9,7 @@
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "mipslab.h"  /* Declatations for these labs */
 #include <string.h> 
+#include <stdlib.h>
 
 /* Declare a helper function which is local to this file */
 static void num32asc( char * s, int ); 
@@ -29,6 +30,7 @@ int currY;
 int currX;
 char temp;
 int count;
+
 
 
 int getsw( void )
@@ -248,13 +250,141 @@ PROJECT FUNCTIONS
 ############################
 */
 
+
+char timeLeft(int hexad) {
+	hexToStr(hexad);
+	char *res = out;
+	hexToBin(res);
+	int calc = countOnes(bin) *4;
+	
+	return calc;
+}
+
+int hexToStr(int hexa){
+	char buff[6];
+	time2string(buff, hexa);
+	out[0] = buff[3];
+	out[1] = buff[4];
+}
+
+//https://codeforwin.org/2015/08/c-program-to-convert-hexadecimal-to-binary-number-system.html
+int hexToBin(char hex[]){ //0xFF
+	int i;
+	for (i = 0; i < 9; i++)
+	{
+		bin[i] = 0;
+	}
+	
+	for(i=0; hex[i]!='\0'; i++)
+    {
+        switch(hex[i])
+        {
+            case '0':
+                strcat(bin, "0000");
+                break;
+            case '1':
+                strcat(bin, "0001");
+                break;
+            case '2':
+                strcat(bin, "0010");
+                break;
+            case '3':
+                strcat(bin, "0011");
+                break;
+            case '4':
+                strcat(bin, "0100");
+                break;
+            case '5':
+                strcat(bin, "0101");
+                break;
+            case '6':
+                strcat(bin, "0110");
+                break;
+            case '7':
+                strcat(bin, "0111");
+                break;
+            case '8':
+                strcat(bin, "1000");
+                break;
+            case '9':
+                strcat(bin, "1001");
+                break;
+            case 'a':
+            case 'A':
+                strcat(bin, "1010");
+                break;
+            case 'b':
+            case 'B':
+                strcat(bin, "1011");
+                break;
+            case 'c':
+            case 'C':
+                strcat(bin, "1100");
+                break;
+            case 'd':
+            case 'D':
+                strcat(bin, "1101");
+                break;
+            case 'e':
+            case 'E':
+                strcat(bin, "1110");
+                break;
+            case 'f':
+            case 'F':
+                strcat(bin, "1111");
+                break;
+        }
+    }
+}
+
+int countOnes(char binaries[]){
+	int ones = 0;
+	int i;
+	for(i = 0; i < 8; i++){
+		if(binaries[i] == '1'){
+			ones++;
+		}
+	}
+	return ones;
+}
+
+int resetBoardArr(){
+	int i, j;
+	for(i = 0; i < 3; i++) {
+		for(j = 0; j < 7; j++) {
+      		boardArr[i][j] = resetArr[i][j];
+		}
+   }
+}
+
+int clearScreen(){
+  int i;
+  for (i = 0; i < 4; i++)
+  {
+    display_string(i, " ");
+  }
+  display_update();
+}
+
+int winExists(void) {
+  if(win == 1 || win == 2)
+  {
+    return 1;
+  }
+  else
+  {
+    return 0;
+  }
+}
+
+//Removed
+/*
 int writeHighScore(void)
 {
-
   int u = 0;
 	letter = 65;
-	hiScore();
-	while (u < 3)
+  clearScreen();
+	if (u < 3)
 	{
 		textbuffer[1][initials] = letter;
     u++;
@@ -263,7 +393,8 @@ int writeHighScore(void)
 	delay(250);
 	if(screen == 4)
 	{
-		display_string(0, "Enter HiScore Player");
+		display_string(0, "TEST");
+    display_update();
 		if(playerX == 1)
 		{
 			textbuffer[0][16] = 88; //X
@@ -280,12 +411,21 @@ int writeHighScore(void)
 		{
 			
 			//display_line(1,i,name[i]);
-		}*/
+		}
 		display_string(3, "Back press BTN 1");
 		display_update();
 	}
 	display_update();
 
+}
+*/
+
+int initWin(){
+	if(winExists() == 1){
+		screen = 4;
+		resetBoardArr();
+		writeHiScore();
+	}
 }
 
 int checkWin(void)
@@ -295,8 +435,10 @@ int checkWin(void)
   if(count == 9)
   {
     display_string(0, "It's a TIE!");
+	  win = 3;
     display_update();
     count = 0;
+	resetBoardArr();
   }
 
   for(p = 0; p < 3; p++) //Kollar vinst vågrätt
@@ -306,14 +448,16 @@ int checkWin(void)
       if(boardArr[p][1] == 88)
       {
         display_string(0, "X WINS!");
-        playerX = 1;
-        display_update();
+		display_update();
+        win = 1;
+		initWin();
       }
       else if (boardArr[0][p] == 79)
       {
         display_string(0, "O WINS!");
-        playerO = 1;
-        display_update();
+		display_update();
+        win = 2;
+		initWin();
       }
     }
 
@@ -324,14 +468,16 @@ int checkWin(void)
         if(boardArr[0][p] == 88)
         {
           display_string(0, "X WINS!");
-          playerX = 1;
           display_update();
+          win = 1;
+		  initWin();
         }
         else if (boardArr[0][p] == 79)
         {
           display_string(0, "O WINS!");
-          playerO = 1;
           display_update();
+          win = 2;
+		  initWin();
         }
       }
     }
@@ -342,51 +488,38 @@ int checkWin(void)
       if(boardArr[1][3] == 88)
       {
         display_string(0, "X WINS!");
-        playerX = 1;
         display_update();
+        win = 1;
+		initWin();
       }
       else if (boardArr[1][3] == 79)
       {
         display_string(0, "O WINS!");
-        playerO = 1;
         display_update();
+        win = 2;
+		initWin();
       }
-    }
-
-    if(playerX == 1 || playerO == 1)
-    {
-      screen = 4;
-      writeHighScore();
-      display_update();
-    }
-
+	}
 }
 
 
-//UNUSED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-/*void initTimer() {
-  if(turn == 1){
-    xTimer = PORTE;
-  }else if(turn == 2){
-    oTimer = PORTE;
-  }
-}*/
-
 void displayTurn(void)
 {
-  if(turn == 1)
-  {
-    textbuffer[2][8] = 88; // X 
-  }
-  else if (turn == 2)
-  {
-    textbuffer[2][8] = 79; // O
-  }
+  if(winExists() == 0){
+    if(turn == 1)
+    {
+      textbuffer[2][8] = 88; // X 
+    }
+    else if (turn == 2)
+    {
+      textbuffer[2][8] = 79; // O
+    }
 
-  textbuffer[2][10] = 84; // T
-  textbuffer[2][11] = 85; // U
-  textbuffer[2][12] = 82; // R
-  textbuffer[2][13] = 78; // N
+    textbuffer[2][10] = 84; // T
+    textbuffer[2][11] = 85; // U
+    textbuffer[2][12] = 82; // R
+    textbuffer[2][13] = 78; // N
+  }
 }
 
 void saveTemp(int Y, int X)
@@ -402,7 +535,7 @@ void writeTemp(int Y, int X){
 
 void createCursor(void) {
   checkWin();
-  if((playerX != 1 || playerO != 1))
+  if(winExists() == 0)
   {
     displayTurn();
     timerStart = 1;
@@ -511,7 +644,7 @@ void place(void) {
       turn = 1;
       display_update();
     }
-	  display_string(0, "  TicTacToe  "); //clr
+	display_string(0, "  TicTacToe  "); //clr
     display_update();
     createCursor();
   }
@@ -525,155 +658,4 @@ void place(void) {
 }
 
 
-/*
- * nextprime
- * 
- * Return the first prime number larger than the integer
- * given as a parameter. The integer must be positive.
- */
-#define PRIME_FALSE   0     /* Constant to help readability. */
-#define PRIME_TRUE    1     /* Constant to help readability. */
-int nextprime( int inval )
-{
-   register int perhapsprime = 0; /* Holds a tentative prime while we check it. */
-   register int testfactor; /* Holds various factors for which we test perhapsprime. */
-   register int found;      /* Flag, false until we find a prime. */
 
-   if (inval < 3 )          /* Initial sanity check of parameter. */
-   {
-     if(inval <= 0) return(1);  /* Return 1 for zero or negative input. */
-     if(inval == 1) return(2);  /* Easy special case. */
-     if(inval == 2) return(3);  /* Easy special case. */
-   }
-   else
-   {
-     /* Testing an even number for primeness is pointless, since
-      * all even numbers are divisible by 2. Therefore, we make sure
-      * that perhapsprime is larger than the parameter, and odd. */
-     perhapsprime = ( inval + 1 ) | 1 ;
-   }
-   /* While prime not found, loop. */
-   for( found = PRIME_FALSE; found != PRIME_TRUE; perhapsprime += 2 )
-   {
-     /* Check factors from 3 up to perhapsprime/2. */
-     for( testfactor = 3; testfactor <= (perhapsprime >> 1) + 1; testfactor += 1 )
-     {
-       found = PRIME_TRUE;      /* Assume we will find a prime. */
-       if( (perhapsprime % testfactor) == 0 ) /* If testfactor divides perhapsprime... */
-       {
-         found = PRIME_FALSE;   /* ...then, perhapsprime was non-prime. */
-         goto check_next_prime; /* Break the inner loop, go test a new perhapsprime. */
-       }
-     }
-     check_next_prime:;         /* This label is used to break the inner loop. */
-     if( found == PRIME_TRUE )  /* If the loop ended normally, we found a prime. */
-     {
-       return( perhapsprime );  /* Return the prime we found. */
-     } 
-   }
-   return( perhapsprime );      /* When the loop ends, perhapsprime is a real prime. */
-} 
-
-/*
- * itoa
- * 
- * Simple conversion routine
- * Converts binary to decimal numbers
- * Returns pointer to (static) char array
- * 
- * The integer argument is converted to a string
- * of digits representing the integer in decimal format.
- * The integer is considered signed, and a minus-sign
- * precedes the string of digits if the number is
- * negative.
- * 
- * This routine will return a varying number of digits, from
- * one digit (for integers in the range 0 through 9) and up to
- * 10 digits and a leading minus-sign (for the largest negative
- * 32-bit integers).
- * 
- * If the integer has the special value
- * 100000...0 (that's 31 zeros), the number cannot be
- * negated. We check for this, and treat this as a special case.
- * If the integer has any other value, the sign is saved separately.
- * 
- * If the integer is negative, it is then converted to
- * its positive counterpart. We then use the positive
- * absolute value for conversion.
- * 
- * Conversion produces the least-significant digits first,
- * which is the reverse of the order in which we wish to
- * print the digits. We therefore store all digits in a buffer,
- * in ASCII form.
- * 
- * To avoid a separate step for reversing the contents of the buffer,
- * the buffer is initialized with an end-of-string marker at the
- * very end of the buffer. The digits produced by conversion are then
- * stored right-to-left in the buffer: starting with the position
- * immediately before the end-of-string marker and proceeding towards
- * the beginning of the buffer.
- * 
- * For this to work, the buffer size must of course be big enough
- * to hold the decimal representation of the largest possible integer,
- * and the minus sign, and the trailing end-of-string marker.
- * The value 24 for ITOA_BUFSIZ was selected to allow conversion of
- * 64-bit quantities; however, the size of an int on your current compiler
- * may not allow this straight away.
- */
-#define ITOA_BUFSIZ ( 24 )
-char * itoaconv( int num )
-{
-  register int i, sign;
-  static char itoa_buffer[ ITOA_BUFSIZ ];
-  static const char maxneg[] = "-2147483648";
-  
-  itoa_buffer[ ITOA_BUFSIZ - 1 ] = 0;   /* Insert the end-of-string marker. */
-  sign = num;                           /* Save sign. */
-  if( num < 0 && num - 1 > 0 )          /* Check for most negative integer */
-  {
-    for( i = 0; i < sizeof( maxneg ); i += 1 )
-    itoa_buffer[ i + 1 ] = maxneg[ i ];
-    i = 0;
-  }
-  else
-  {
-    if( num < 0 ) num = -num;           /* Make number positive. */
-    i = ITOA_BUFSIZ - 2;                /* Location for first ASCII digit. */
-    do {
-      itoa_buffer[ i ] = num % 10 + '0';/* Insert next digit. */
-      num = num / 10;                   /* Remove digit from number. */
-      i -= 1;                           /* Move index to next empty position. */
-    } while( num > 0 );
-    if( sign < 0 )
-    {
-      itoa_buffer[ i ] = '-';
-      i -= 1;
-    }
-  }
-  /* Since the loop always sets the index i to the next empty position,
-   * we must add 1 in order to return a pointer to the first occupied position. */
-  return( &itoa_buffer[ i + 1 ] );
-}
-
-
-
-
-
-/*
-  if(direction == 1){
-    if(currX != 1 && currY != 1){
-      if(currX == 1 && (currY == 2 || currY == 3)){
-        currY--;
-        currX = 5;
-        
-        boardArr[currY-1][currX] = 43;
-    display_update();
-    return;
-      }
-      currX=-2;
-
-      boardArr[currY-1][currX] = 43;
-    display_update();
-    return;
-    }
-  }*/
