@@ -121,17 +121,17 @@ void labwork(void)
 	else if (((btn & 4) && screen == 4) && letter > 65) //BTN 4, Bokstav bak
 	{
 		letter--;
-		textbuffer[2][initials] = letter;
+		textbuffer[3][initials] = letter;
 		display_update();
-		delay(100);
+		delay(200);
 	}
 
 	else if (((btn & 1) && screen == 4) && letter < 90) //BTN 2, Bokstav fram
 	{
 		letter++;
-		textbuffer[2][initials] = letter;
+		textbuffer[3][initials] = letter;
 		display_update();
-		delay(100);
+		delay(200);
 	}
 
 	else if (((btn & 2) && screen == 4) && initials < 3) //BTN 3
@@ -140,16 +140,15 @@ void labwork(void)
 		delay(100);
 		nameTemp[initials] = letter; //Writes to temp
 
-		textbuffer[2][initials] = letter;
+		textbuffer[3][initials] = letter;
 		if(initials != 2){
-			textbuffer[2][initials+1] = 65;
+			textbuffer[3][initials+1] = 65;
 		}
 		initials++;
 		display_update();
-		delay(100);
 		if(initials == 3)
 		{
-			textbuffer[2][initials] = 0;
+			textbuffer[3][initials] = 0;
 			resetGame();
 			compareScore(calcG);
 			menu();
@@ -218,8 +217,8 @@ int writeHiScore(void)
 		textbuffer[0][8] = 79; //O
 		timeLeft(oTimer, 0, 14, 1);
 	}
-	display_string(1, "Enter name:");
+	display_string(2, "Enter name:");
 
-	textbuffer[2][0] = 65; //A
+	textbuffer[3][0] = 65; //A
 	display_update();
 }
