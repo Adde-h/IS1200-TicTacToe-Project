@@ -1,11 +1,4 @@
-/* mipslab.h
-   Header file for all labs.
-   This file written 2015 by F Lundevall
-   Some parts are original code written by Axel Isaksson
 
-   Latest update 2015-08-28 by F Lundevall
-
-   For copyright and licensing, see file COPYING */
 
 /* Declare display-related functions from mipslabfunc.c */
 void display_image(int x, const uint8_t *data);
@@ -44,9 +37,10 @@ extern char textbuffer[4][16];
 
 extern char boardArr[3][7];
 extern char resetArr[3][7];
-extern char name[3][3];
+extern char name1[3];
+extern char name2[3];
+extern char nameTemp[6];
 extern int nameScore[2];
-//extern char tempName[3];
 extern int win;
 extern int screen; // Menu = 0, Instr = 1, Hi-Score = 2, Game = 3, Write Highscore = 4;
 extern char letter;
@@ -58,6 +52,8 @@ extern char out[2];
 extern char timeSc[2];
 extern int count;
 extern int xTimer, oTimer;
+int timeoutcountX, timeoutcountO;
+extern int calcG;
 
 
 /* Declare functions written by students.

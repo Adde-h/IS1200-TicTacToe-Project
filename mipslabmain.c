@@ -1,11 +1,14 @@
 /* mipslabmain.c
 
-   This file written 2015 by Axel Isaksson,
-   modified 2015, 2017 by F Lundevall
+   This file written 2015 by Axel Isaksson
 
-   Latest update 2017-04-21 by F Lundevall
+	#################
+	#  Tic-Tac-Toe  #
+	#################
 
-   For copyright and licensing, see file COPYING */
+	Updated 2020-03-01 by Adeel Hussain & Alan Hajo
+
+	For copyright and licensing, see file COPYING */
 
 #include <stdio.h>
 #include <stdint.h>   /* Declarations of uint_32 and the like */

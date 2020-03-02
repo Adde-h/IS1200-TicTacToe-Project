@@ -1,8 +1,13 @@
 /* mipslabfunc.c
    This file written 2015 by F Lundevall
-   Some parts are original code written by Axel Isaksson
+	
+	#################
+	#  Tic-Tac-Toe  #
+	#################
 
-   For copyright and licensing, see file COPYING */
+	Updated 2020-03-01 by Adeel Hussain & Alan Hajo
+
+	For copyright and licensing, see file COPYING */
 
 #include <stdio.h>
 #include <stdint.h>   /* Declarations of uint_32 and the like */
@@ -26,11 +31,12 @@ static void num32asc( char * s, int );
 #define DISPLAY_TURN_OFF_VDD (PORTFSET = 0x40)
 #define DISPLAY_TURN_OFF_VBAT (PORTFSET = 0x20)
 
+#define TMR2PERIOD ((80000000 / 256) / 10)
+
+
 int currY;
 int currX;
 char temp;
-
-
 
 int getsw( void )
 {
@@ -167,26 +173,6 @@ void display_string(int line, char *s) {
 			textbuffer[line][i] = ' ';
 }
 
-/*void display_image(int x, const uint8_t *data) {
-	int i, j;
-	
-	for(i = 0; i < 4; i++) {
-		DISPLAY_CHANGE_TO_COMMAND_MODE;
-
-		spi_send_recv(0x22);
-		spi_send_recv(i);
-		
-		spi_send_recv(x & 0xF);
-		spi_send_recv(0x10 | ((x >> 4) & 0xF));
-		
-		DISPLAY_CHANGE_TO_DATA_MODE;
-		
-		for(j = 0; j < 32; j++)
-			spi_send_recv(~data[i*32 + j]);
-	}
-}
-*/
-
 void display_update(void) {
 	int i, j, k;
 	int c;
@@ -226,35 +212,89 @@ static void num32asc( char * s, int n )
 PROJECT FUNCTIONS
 ############################
 */
-
-/*int showNames() {
-	int i, j;
-	for(i = 0; i < 2; i++) {
-		for(j = 0; j < 3; j++) {
-      		texbuffer[i][j] = name[i][j];
+int chessClock()
+{
+	if (timerStart == 1)
+		{
+			if (turn == 1)
+			{
+				PORTE = xTimer;
+				timeoutcountX++;
+				if (timeoutcountX == 40)
+				{ 
+					timeoutcountX = 0;
+					xTimer -= 0x1;
+					xTimer = (xTimer / 2);
+					PORTE = xTimer;
+				}
+				if (xTimer == 0x0)
+				{
+					win = 2;
+					timerStart = 0;
+					initWin();
+				}
+			}
+			if (turn == 2)
+			{
+				PORTE = oTimer;
+				timeoutcountO++;
+				if (timeoutcountO == 40)
+				{
+					timeoutcountO = 0;
+					oTimer -= 0x1;
+					oTimer = (oTimer / 2);
+					PORTE = oTimer;
+				}
+				if (oTimer == 0x0)
+				{
+					win = 1;
+					timerStart = 0;
+					initWin();
+				}
+			}
 		}
-   }
-}*/
+}
 
-/*int writeToTemp(int loop, char let){
-	tempName[initials] = let;
-}*/
+int clockTimer()
+{
+	
+	TRISECLR = 0xFF; // Set first 8 bits to zero (sets them as output pins for LED)
+
+	TRISFCLR = 0x1; //Initialize BTN 1
+	// Initialize port D, set bits 11-5 as inputs. SW1-4 & BTN2-4
+	TRISD = TRISD & 0x0fe0;
+
+	PR2 = TMR2PERIOD;
+	T2CON = 0x0;	   // clearing the clock
+	T2CONSET = 0x70;   // setting the prescale
+	TMR2 = 0;		   // reset timer to 0
+	T2CONSET = 0x8000; // turn timer on, set bit 15 to 1
+
+	// configuring the priority level
+	IPC(2) = 7;
+	// enabling bit 8 for the interupt
+	IEC(0) = (1 << 8);
+
+	// calling interupt from labwork.S
+	enable_interrupt();
+}
 
 int compareScore(int newScore) 
 {
 	int c;
-  	if(newScore > nameScore[0])
+  if(newScore > nameScore[0])
 	{
 		for (c = 0; c < 3; c++)
 		{
-			name[1][c] = name[0][c];
+			name2[c] = name1[c];
 		}
 
 		nameScore[1] = nameScore[0];
 		
 		for (c = 0; c < 3; c++)
 		{
-			name[0][c] = name[2][c];
+			name1[c] = nameTemp[c];
+			delay(250);
 		}
 
 		nameScore[0] = newScore;
@@ -270,7 +310,7 @@ int compareScore(int newScore)
 			nameScore[1] = newScore;
 			for (c = 0; c < 3; c++)
 			{
-				name[1][c] = name[2][c];
+				name2[c] = nameTemp[c];
 			}
 		}
 	}
@@ -320,19 +360,17 @@ int resetGame(){
  }
 
 
-int timeLeft(int hexad, int x, int y, int compare) { //hexad = 0xFF (int)
-	hexToStr(hexad); 					//0xFF -> "0xFF" (str)
+int timeLeft(int hexad, int x, int y) { //hexad = 0xFF (int)
+	hexToStr(hexad); 					      //0xFF -> "0xFF" (str)
 	char *res = out; 					
-	hexToBin(res);						//"0xFF" (str) -> "11111111"
+	hexToBin(res);						      //"0xFF" (str) -> "11111111"
 	int calc = countOnes(bin) *4;		//8*4 (int)
-	itoa(calc, timeSc);					//20 (int) -> "20" (str)
+	itoa(calc, timeSc);					    //20 (int) -> "20" (str)
   	int b;
 	for(b = 0; b < 2; b++){
 		textbuffer[x][y+b] = timeSc[b];
 	}
-	if(compare == 1){
-		compareScore(calc);
-	}
+	calcG = calc;
 }
 
 int hexToStr(int hexa){
@@ -438,7 +476,7 @@ int clearScreen(){
   {
     display_string(i, " ");
   }
-  display_update();
+  	display_update();
 }
 
 int winExists(void) {
@@ -465,43 +503,26 @@ int checkWin(void)
 {
   int p;
 
-	if((boardArr[1][1] == boardArr[1][3]) && (boardArr[1][3] == boardArr[1][5]))
-    {
-      if(boardArr[1][1] == 88)
-      {
-        display_string(0, "X WINS!");
-		display_update();
-        win = 1;
-		initWin();
-      }
-      else if (boardArr[1][p] == 79)
-      {
-        display_string(0, "O WINS!");
-		display_update();
-        win = 2;
-		initWin();
-      }
-    }
-
-  for(p = 0; p < 3; p++) //Kollar vinst vågrätt
-  {
-    if((boardArr[p][1] == boardArr[p][3]) && (boardArr[p][3] == boardArr[p][5]))
-    {
-      if(boardArr[p][1] == 88)
-      {
-        display_string(0, "X WINS!");
-		display_update();
-        win = 1;
-		initWin();
-      }
-      else if (boardArr[0][p] == 79)
-      {
-        display_string(0, "O WINS!");
-		display_update();
-        win = 2;
-		initWin();
-      }
-    }
+	for(p = 0; p < 3; p++) //Kollar vinst vågrätt
+	{
+		if((boardArr[p][1] == boardArr[p][3]) && (boardArr[p][3] == boardArr[p][5]))
+		{
+			if(boardArr[p][1] == 88)
+			{
+				display_string(0, "X WINS!");
+				display_update();
+				win = 1;
+				initWin();
+			}
+			else if (boardArr[p][1] == 79)
+			{
+				display_string(0, "O WINS!");
+				display_update();
+				win = 2;
+				initWin();
+			}
+		}
+	}
 
     for(p = 1; p <= 5; p+=2) //Kollar vinst lodrätt
     {
@@ -523,7 +544,6 @@ int checkWin(void)
         }
       }
     }
-  }
     if (((boardArr[0][1] == boardArr[1][3]) && (boardArr[0][1] == boardArr[2][5])) ||
         ((boardArr[0][5] == boardArr[1][3]) && (boardArr[0][5] == boardArr[2][1]))) // Kollar vinst diagonalt
     {
@@ -663,7 +683,6 @@ void moveCursor(int direction){
     }
   }
 
-  //boardArr[currY-1][currX] = 43;
   textbuffer[currY][currX] = 43;
   display_update();
   return;
@@ -707,6 +726,3 @@ void place(void) {
   }
 
 }
-
-
-

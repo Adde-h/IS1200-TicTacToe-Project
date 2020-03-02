@@ -1,5 +1,5 @@
 /* mipslabdata.c
-   This file compiled 2015 by F Lundevall
+   This file compiled 2020 by Adeel Hussain & Alan Hajo
    from original code written by Axel Isaksson
 
    For copyright and licensing, see file COPYING */
@@ -20,13 +20,10 @@ char resetArr[3][7] = {
 	{124, 43, 124, 43, 124, 43, 124},
 	{124, 43, 124, 43, 124, 43, 124}
 };
-char name[3][3] = {
-	{' ', ' ', ' '}, //Första plats initialer
-	{' ', ' ', ' '},
-	{' ', ' ', ' '}
-};
+char name1[3];
+char name2[3];
+char nameTemp[6];
 int nameScore[2] = {0,0};
-//char tempName[3] = "";
 int screen = 0;
 char letter = 65;
 int timerStart = 0;
@@ -37,7 +34,9 @@ char bin[9] = "";
 char out[2] = "";
 char timeSc[2] = "";
 int count = 0;
-
+int timeoutcountX = 0;
+int timeoutcountO = 0;
+int calcG = 0;
 
 const uint8_t const font[] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
