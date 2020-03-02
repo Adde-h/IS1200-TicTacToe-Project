@@ -210,12 +210,12 @@ int writeHiScore(void)
 	if (win == 1) //X-win
 	{
 		textbuffer[0][8] = 88; //X
-		timeLeft(xTimer, 0, 14, 1);
+		timeLeft(xTimer, 0, 14);
 	}
 	else if (win == 2) //O-win
 	{
 		textbuffer[0][8] = 79; //O
-		timeLeft(oTimer, 0, 14, 1);
+		timeLeft(oTimer, 0, 14);
 	}
 	display_string(2, "Enter name:");
 
