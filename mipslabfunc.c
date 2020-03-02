@@ -484,6 +484,9 @@ int winExists(void) {
   {
     return 1;
   }
+  else if(win == 3){
+	return 2;
+  }
   else
   {
     return 0;
@@ -565,10 +568,13 @@ int checkWin(void)
 	else if(count == 9 && win == 0)
   	{
 		display_string(0, "It's a TIE!");
-		win = 3;
 		display_update();
-		count = 0;
-		resetBoardArr();
+		win = 3;
+    	delay(250);
+		resetGame();
+		delay(100);
+		menu();
+		display_update();
   	}
 
 }
