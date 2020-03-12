@@ -16,8 +16,6 @@
 #include <string.h>
 
 char textstring[] = "text, more text, and even more text!";
-int hsPoints[2];
-
 int xTimer = 0xFF;
 int oTimer = 0xFF;
 
@@ -137,7 +135,7 @@ void labwork(void)
 	else if (((btn & 2) && screen == 4) && initials < 3) //BTN 3
 	{
 		
-		delay(100);
+		delay(250);
 		nameTemp[initials] = letter; //Writes to temp
 
 		textbuffer[3][initials] = letter;
